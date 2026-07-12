@@ -1,0 +1,4 @@
+TIDE — FINAL AUDITED BUILD v1.1
+Built: 2026-07-10
+Per-file audit: 61 files checked individually (see FILE-CHECKLIST.md).
+If the folder you are using does not contain this file, it is an OLD copy — delete it and use TIDE-FINAL-v1.1.zip.

@@ -1,0 +1,322 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TIDE — an honest product research engine</title>
+<meta name="description" content="TIDE scans free market signals every six hours, scores rising products with evidence, and publishes its hit rate. No income promises. Picks never sold.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=IBM+Plex+Sans:wght@400;500&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#0E1B2C; --paper:#F7F8F6; --card:#FFFFFF;
+    --tide:#0F6E56; --tide-soft:#E1F5EE;
+    --watch:#BA7517; --mist:#5E6B7A; --line:#D9DEE3;
+    --serif:"Fraunces",serif; --sans:"IBM Plex Sans",system-ui,sans-serif;
+    --mono:"IBM Plex Mono",monospace;
+  }
+  *{box-sizing:border-box;margin:0}
+  html{scroll-behavior:smooth}
+  body{background:var(--paper);color:var(--ink);font-family:var(--sans);
+       font-size:17px;line-height:1.65;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:960px;margin:0 auto;padding:0 24px}
+  a{color:var(--tide)}
+  ::selection{background:var(--tide-soft)}
+
+  header{padding:28px 0}
+  .nav{display:flex;justify-content:space-between;align-items:baseline}
+  .mark{font-family:var(--mono);font-weight:500;font-size:18px;letter-spacing:.14em}
+  .mark span{color:var(--tide)}
+  .nav a.charter{font-size:14px;color:var(--mist);text-decoration:none;border-bottom:1px solid var(--line)}
+  .nav a.charter:hover{color:var(--ink);border-color:var(--ink)}
+
+  .hero{padding:56px 0 40px;display:grid;grid-template-columns:1.1fr .9fr;gap:56px;align-items:center}
+  h1{font-family:var(--serif);font-weight:600;font-size:clamp(34px,5vw,52px);
+     line-height:1.12;letter-spacing:-.01em}
+  h1 em{font-style:normal;color:var(--tide)}
+  .lede{margin-top:20px;font-size:18px;color:var(--mist);max-width:34em}
+  .lede strong{color:var(--ink);font-weight:500}
+
+  form{margin-top:30px;display:flex;gap:10px;max-width:440px}
+  input[type=email]{flex:1;font:inherit;padding:13px 16px;border:1px solid var(--line);
+     border-radius:8px;background:var(--card);color:var(--ink)}
+  input[type=email]:focus{outline:2px solid var(--tide);outline-offset:1px;border-color:var(--tide)}
+  button{font:inherit;font-weight:500;padding:13px 22px;border:0;border-radius:8px;
+     background:var(--ink);color:#fff;cursor:pointer}
+  button:hover{background:#1B2C42}
+  button:focus-visible{outline:2px solid var(--tide);outline-offset:2px}
+  button:disabled{opacity:.6;cursor:wait}
+  .formnote{margin-top:10px;font-size:13.5px;color:var(--mist)}
+  .formmsg{margin-top:12px;font-size:15px;font-weight:500;min-height:1.4em}
+  .formmsg.ok{color:var(--tide)} .formmsg.err{color:#A32D2D}
+  .hp{position:absolute;left:-5000px}
+
+  /* Signature: the instrument card with a live tide-line */
+  .instrument{background:var(--card);border:1px solid var(--line);border-radius:14px;
+     padding:22px 22px 18px;box-shadow:0 1px 0 var(--line)}
+  .inst-top{display:flex;justify-content:space-between;align-items:baseline;
+     font-family:var(--mono);font-size:12.5px;color:var(--mist);letter-spacing:.06em}
+  .inst-top .tag{color:var(--tide);border:1px solid var(--tide);border-radius:99px;
+     padding:2px 10px;font-weight:500}
+  .inst-name{font-family:var(--serif);font-size:21px;font-weight:600;margin:14px 0 2px}
+  .inst-score{font-family:var(--mono);font-size:13px;color:var(--mist)}
+  .inst-score b{color:var(--ink);font-size:15px}
+  .tideline{display:block;width:100%;height:84px;margin:14px 0 6px}
+  .tideline path{fill:none;stroke:var(--tide);stroke-width:2.5;stroke-linecap:round}
+  .tideline .area{fill:var(--tide-soft);stroke:none}
+  .evrow{display:flex;justify-content:space-between;font-family:var(--mono);
+     font-size:12.5px;padding:7px 0;border-top:1px dashed var(--line);color:var(--mist)}
+  .evrow b{color:var(--ink);font-weight:500}
+  .inst-foot{margin-top:12px;font-size:12.5px;color:var(--mist)}
+
+  @media (prefers-reduced-motion: no-preference){
+    .tideline path.draw{stroke-dasharray:600;stroke-dashoffset:600;
+      animation:draw 2.2s ease-out .3s forwards}
+    @keyframes draw{to{stroke-dashoffset:0}}
+  }
+
+  section{padding:52px 0;border-top:1px solid var(--line)}
+  .eyebrow{font-family:var(--mono);font-size:13px;letter-spacing:.14em;
+     text-transform:uppercase;color:var(--tide);margin-bottom:14px}
+  h2{font-family:var(--serif);font-weight:600;font-size:30px;line-height:1.2;max-width:22em}
+  .sub{margin-top:14px;color:var(--mist);max-width:36em}
+
+  .placard{margin-top:26px;border:1.5px solid var(--ink);border-radius:12px;
+     padding:26px 28px;background:var(--card);max-width:640px}
+  .placard p{margin:0}
+  .placard .big{font-family:var(--serif);font-size:22px;font-weight:600;line-height:1.35}
+  .placard .rest{margin-top:12px;color:var(--mist)}
+
+  .steps{margin-top:34px;display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+  .step{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:22px}
+  .step .n{font-family:var(--mono);font-size:13px;color:var(--tide);letter-spacing:.1em}
+  .step h3{font-family:var(--serif);font-size:19px;font-weight:600;margin:10px 0 8px}
+  .step p{font-size:15px;color:var(--mist)}
+
+  .charterlist{margin-top:26px;display:grid;gap:0;max-width:680px}
+  .citem{display:flex;gap:16px;padding:16px 0;border-top:1px dashed var(--line)}
+  .citem:first-child{border-top:0}
+  .citem .no{font-family:var(--mono);color:var(--tide);font-size:14px;padding-top:2px;min-width:2.2em}
+  .citem b{font-weight:500}
+  .citem p{font-size:15px;color:var(--mist);margin-top:2px}
+
+  .receipts{background:var(--card);border:1px solid var(--line);border-radius:12px;
+     padding:26px 28px;max-width:680px;margin-top:26px}
+  .receipts .stat{font-family:var(--mono);font-size:15px;display:flex;gap:12px;align-items:baseline}
+  .receipts .stat b{font-size:26px;color:var(--watch);font-weight:500}
+  .receipts p{font-size:15px;color:var(--mist);margin-top:10px}
+
+  footer{border-top:1px solid var(--line);padding:36px 0 56px;
+     font-size:14px;color:var(--mist)}
+  footer .wrap{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}
+
+  @media(max-width:820px){
+    .hero{grid-template-columns:1fr;gap:40px;padding-top:36px}
+    .steps{grid-template-columns:1fr}
+    form{flex-direction:column}
+  }
+</style>
+</head>
+<body>
+
+<header class="wrap nav">
+  <div class="mark">T<span>~</span>IDE</div>
+  <a class="charter" href="#charter">The Operator's Charter</a>
+</header>
+
+<main>
+  <div class="wrap hero">
+    <div>
+      <h1>Product research that shows you the <em>evidence</em> — and the odds.</h1>
+      <p class="lede">TIDE scans free market signals every six hours and scores
+        rising products before they hit the mainstream tools. Every score explains
+        itself. <strong>And we publish our hit rate — whatever it turns out to be.</strong></p>
+
+      <form id="wl" novalidate>
+        <input type="email" id="email" name="email" placeholder="you@example.com"
+               autocomplete="email" required aria-label="Email address">
+        <input class="hp" type="text" name="company" tabindex="-1" autocomplete="off" aria-hidden="true">
+        <button id="btn" type="submit">Join the waitlist</button>
+      </form>
+      <p class="formnote">Free for early members at launch. One email when we open — nothing else.</p>
+      <p class="formmsg" id="msg" role="status" aria-live="polite"></p>
+    </div>
+
+    <figure class="instrument" aria-label="Example of a TIDE product report">
+      <div class="inst-top"><span>SIGNAL REPORT · EXAMPLE</span><span class="tag">TEST</span></div>
+      <div class="inst-name">Collapsible trunk organizer</div>
+      <div class="inst-score"><b>82 / 100</b> · confidence: high · 3 sources</div>
+      <svg class="tideline" viewBox="0 0 420 84" preserveAspectRatio="none" role="img"
+           aria-label="Rising interest curve over ninety days">
+        <path class="area" d="M0,72 C60,70 120,64 180,56 C240,48 300,34 360,18 L420,8 L420,84 L0,84 Z"/>
+        <path class="draw" d="M0,72 C60,70 120,64 180,56 C240,48 300,34 360,18 L420,8"/>
+      </svg>
+      <div class="evrow"><span>search momentum, 90d</span><b>rising · peak is recent</b></div>
+      <div class="evrow"><span>reddit chatter, 30d</span><b>24 mentions · organic</b></div>
+      <div class="evrow"><span>active ads running</span><b>4 — early</b></div>
+      <figcaption class="inst-foot">Illustrative example of the report format.
+        Real weekly picks carry real data — and their outcomes are tracked publicly.</figcaption>
+    </figure>
+  </div>
+
+  <section id="odds">
+    <div class="wrap">
+      <div class="eyebrow">The part other tools won't say</div>
+      <h2>Most new stores fail. We built for the people who can hear that.</h2>
+      <div class="placard">
+        <p class="big">Industry estimates put the failure rate of new e-commerce
+          stores at 80–90% in the first months.</p>
+        <p class="rest">Anyone selling you certainty is selling you something else.
+          TIDE is a research instrument for people treating this like a real
+          business: test small, read the evidence, kill losers fast, and only
+          ever use money you can afford to lose. If that sounds right, you'll
+          like it here.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="how">
+    <div class="wrap">
+      <div class="eyebrow">How it works</div>
+      <h2>Three moves, every six hours.</h2>
+      <div class="steps">
+        <div class="step"><div class="n">01 · SCOUT</div>
+          <h3>Listen to the water</h3>
+          <p>Search momentum, community chatter, and ad-market saturation —
+             gathered from public sources on a six-hour cycle.</p></div>
+        <div class="step"><div class="n">02 · ANALYST</div>
+          <h3>Score with evidence</h3>
+          <p>A documented 0–100 model. Safety guardrails exclude risky
+             categories. Missing data lowers confidence — it's never hidden.</p></div>
+        <div class="step"><div class="n">03 · YOU</div>
+          <h3>Decide, informed</h3>
+          <p>Monday picks arrive with the reasoning attached: test, watch, or
+             skip. The decision — and the business — stays yours.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="charter">
+    <div class="wrap">
+      <div class="eyebrow">The Operator's Charter</div>
+      <h2>Rules we publish so you can hold us to them.</h2>
+      <div class="charterlist">
+        <div class="citem"><span class="no">§1</span><div><b>We never promise income.</b>
+          <p>No dollar figures dangled, no lifestyle ads, no dream-selling. Ever.</p></div></div>
+        <div class="citem"><span class="no">§2</span><div><b>Picks are never for sale.</b>
+          <p>No supplier can pay to appear in your recommendations. Scores come from data alone.</p></div></div>
+        <div class="citem"><span class="no">§3</span><div><b>Your data is never used against you.</b>
+          <p>We don't run competing stores, and your store's data is never sold or shared.</p></div></div>
+        <div class="citem"><span class="no">§4</span><div><b>We publish our hit rate.</b>
+          <p>Every pick's outcome is tracked and the score goes public — good quarter or bad.</p></div></div>
+        <div class="citem"><span class="no">§5</span><div><b>Honest billing, always.</b>
+          <p>Full price on the page, cancel in two clicks, an email before any renewal.</p></div></div>
+      </div>
+      <p class="sub" style="margin-top:22px">The full charter — eleven commitments,
+        versioned publicly — ships with the product at launch.</p>
+    </div>
+  </section>
+
+  <section id="receipts">
+    <div class="wrap">
+      <div class="eyebrow">Receipts</div>
+      <h2>We launch with proof, not promises.</h2>
+      <div class="receipts">
+        <div class="stat"><b id="rc-big">VALIDATING</b><span id="rc-side">public trial in progress</span></div>
+        <p id="rc-body">The engine publishes picks every Monday. Four weeks later, each pick is
+          scored against what actually happened. When the first cycle completes,
+          the hit rate appears right here — and updates quarterly from then on.</p>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="mark">T<span>~</span>IDE</div>
+    <div>Questions or charter reports: <a href="mailto:hello@example.com">hello@example.com</a></div>
+    <div>© 2026 · Research tools, not financial advice. Results depend on you.</div>
+  </div>
+</footer>
+
+<script>
+  // ── Setup: paste your two Supabase values here (README step 5) ──
+  const SUPABASE_URL = "PASTE_YOUR_SUPABASE_PROJECT_URL";      // https://xxxx.supabase.co
+  const SUPABASE_ANON_KEY = "PASTE_YOUR_SUPABASE_ANON_KEY";    // Settings -> API -> anon public
+
+  // Charter 8: pull the published hit rate, whatever it is. Shows once at
+  // least 10 picks have been scored; until then the honest "validating" state.
+  (async () => {
+    if (SUPABASE_URL.startsWith("PASTE")) return;
+    try {
+      const r = await fetch(
+        `${SUPABASE_URL}/rest/v1/hitrate_public?period=eq.all&select=picks_scored,hits,rate,updated_at`,
+        { headers: { apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${SUPABASE_ANON_KEY}` } });
+      if (!r.ok) return;
+      const rows = await r.json();
+      const h = rows && rows[0];
+      if (h && h.picks_scored >= 10 && h.rate !== null) {
+        document.getElementById("rc-big").textContent = Math.round(h.rate * 100) + "%";
+        document.getElementById("rc-big").style.color = "var(--tide)";
+        document.getElementById("rc-side").textContent =
+          `hit rate across ${h.picks_scored} scored picks`;
+        document.getElementById("rc-body").textContent =
+          `Every Monday the engine publishes picks; four weeks later each one is ` +
+          `scored against what actually happened. ${h.hits} of ${h.picks_scored} ` +
+          `picks confirmed so far. Updated ${new Date(h.updated_at).toLocaleDateString()}. ` +
+          `This number moves — and it stays public either way.`;
+      }
+    } catch { /* the honest default stays on screen */ }
+  })();
+
+  const form = document.getElementById("wl");
+  const msg = document.getElementById("msg");
+  const btn = document.getElementById("btn");
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    msg.className = "formmsg";
+    const email = document.getElementById("email").value.trim();
+    const honeypot = form.querySelector(".hp").value;
+    if (honeypot) return;                                   // bot filled the hidden field
+    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
+      msg.textContent = "That email doesn't look complete — check it and try again.";
+      msg.classList.add("err"); return;
+    }
+    if (SUPABASE_URL.startsWith("PASTE")) {
+      msg.textContent = "Setup incomplete: add your Supabase keys in index.html (README step 5).";
+      msg.classList.add("err"); return;
+    }
+    btn.disabled = true; btn.textContent = "Joining…";
+    try {
+      const r = await fetch(`${SUPABASE_URL}/rest/v1/waitlist`, {
+        method: "POST",
+        headers: {
+          apikey: SUPABASE_ANON_KEY,
+          Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
+          "Content-Type": "application/json",
+          Prefer: "return=minimal",
+        },
+        body: JSON.stringify({ email, source: "landing" }),
+      });
+      if (r.ok) {
+        msg.textContent = "You're on the list. One email when we open — that's it.";
+        msg.classList.add("ok"); form.reset();
+      } else if (r.status === 409) {
+        msg.textContent = "You're already on the list — we've got you.";
+        msg.classList.add("ok");
+      } else {
+        msg.textContent = "Something went wrong on our side. Try again in a minute.";
+        msg.classList.add("err");
+      }
+    } catch {
+      msg.textContent = "Couldn't reach the server. Check your connection and try again.";
+      msg.classList.add("err");
+    } finally {
+      btn.disabled = false; btn.textContent = "Join the waitlist";
+    }
+  });
+</script>
+</body>
+</html>

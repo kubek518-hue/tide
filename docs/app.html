@@ -1,0 +1,899 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mission Control — TIDE</title>
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=IBM+Plex+Sans:wght@400;500&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#0E1B2C; --paper:#F7F8F6; --card:#FFFFFF;
+    --tide:#0F6E56; --tide-soft:#E1F5EE;
+    --watch:#BA7517; --watch-soft:#FAEEDA;
+    --stop:#A32D2D; --stop-soft:#FCEBEB;
+    --mist:#5E6B7A; --line:#D9DEE3;
+    --serif:"Fraunces",serif; --sans:"IBM Plex Sans",system-ui,sans-serif;
+    --mono:"IBM Plex Mono",monospace;
+  }
+  *{box-sizing:border-box;margin:0}
+  body{background:var(--paper);color:var(--ink);font-family:var(--sans);
+       font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:760px;margin:0 auto;padding:0 20px}
+  a{color:var(--tide)}
+  ::selection{background:var(--tide-soft)}
+
+  header{padding:22px 0;border-bottom:1px solid var(--line)}
+  .nav{display:flex;justify-content:space-between;align-items:center}
+  .mark{font-family:var(--mono);font-weight:500;font-size:16px;letter-spacing:.14em}
+  .mark span{color:var(--tide)}
+  .nav button{font:inherit;font-size:13.5px;background:none;border:0;color:var(--mist);
+     cursor:pointer;text-decoration:underline;text-underline-offset:3px}
+  .nav button:hover{color:var(--ink)}
+
+  main{padding:36px 0 72px}
+  .hidden{display:none !important}
+
+  h1{font-family:var(--serif);font-weight:600;font-size:28px;line-height:1.2}
+  .sub{color:var(--mist);margin-top:8px;font-size:15px}
+
+  /* Forms */
+  .authcard{background:var(--card);border:1px solid var(--line);border-radius:14px;
+     padding:28px;max-width:440px;margin-top:28px}
+  input[type=email]{width:100%;font:inherit;padding:12px 15px;border:1px solid var(--line);
+     border-radius:8px;background:var(--paper);color:var(--ink);margin-top:14px}
+  input[type=email]:focus{outline:2px solid var(--tide);outline-offset:1px;border-color:var(--tide)}
+  .btn{font:inherit;font-weight:500;padding:12px 20px;border:0;border-radius:8px;
+     background:var(--ink);color:#fff;cursor:pointer;margin-top:14px;width:100%}
+  .btn:hover{background:#1B2C42}
+  .btn:focus-visible{outline:2px solid var(--tide);outline-offset:2px}
+  .btn:disabled{opacity:.6;cursor:wait}
+  .btn.secondary{background:var(--card);color:var(--ink);border:1px solid var(--line)}
+  .btn.secondary:hover{background:var(--paper)}
+  .note{font-size:13.5px;color:var(--mist);margin-top:12px}
+  .msg{margin-top:12px;font-size:14.5px;font-weight:500;min-height:1.3em}
+  .msg.ok{color:var(--tide)} .msg.err{color:var(--stop)}
+
+  /* Coach briefing */
+  .coach{background:var(--card);border:1px solid var(--line);border-radius:14px;
+     padding:24px 26px;margin-top:28px}
+  .coach .who{font-family:var(--mono);font-size:12px;letter-spacing:.12em;
+     color:var(--tide);text-transform:uppercase}
+  .coach .body{margin-top:10px;font-size:15.5px}
+  .coach .body h3{font-family:var(--serif);font-size:18px;font-weight:600;margin-bottom:8px}
+  .coach .body ul{padding-left:20px;margin:8px 0}
+  .coach .body li{margin:4px 0}
+  .coach .body strong{font-weight:500}
+
+  /* Picks */
+  .sectionlabel{font-family:var(--mono);font-size:12.5px;letter-spacing:.12em;
+     text-transform:uppercase;color:var(--mist);margin:36px 0 12px}
+  .pick{background:var(--card);border:1px solid var(--line);border-radius:14px;
+     padding:20px 22px;margin-bottom:12px}
+  .pickrow{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+  .dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+  .dot.test{background:var(--tide)} .dot.watch{background:var(--watch)}
+  .pickname{font-family:var(--serif);font-size:19px;font-weight:600;flex:1;min-width:200px}
+  .badge{font-family:var(--mono);font-size:12px;font-weight:500;letter-spacing:.08em;
+     padding:3px 12px;border-radius:99px}
+  .badge.test{background:var(--tide-soft);color:var(--tide)}
+  .badge.watch{background:var(--watch-soft);color:var(--watch)}
+  .pickmeta{font-family:var(--mono);font-size:12.5px;color:var(--mist);margin-top:6px}
+  .pickmeta b{color:var(--ink);font-size:14px}
+  .warn{margin-top:12px;background:var(--watch-soft);color:#633806;border-radius:8px;
+     padding:10px 14px;font-size:14px}
+  details{margin-top:12px}
+  summary{cursor:pointer;font-size:14px;color:var(--tide);font-weight:500;
+     list-style:none;display:inline-flex;align-items:center;gap:6px}
+  summary::before{content:"+";font-family:var(--mono)}
+  details[open] summary::before{content:"–"}
+  summary:focus-visible{outline:2px solid var(--tide);outline-offset:2px;border-radius:4px}
+  .evidence{margin-top:10px;background:var(--paper);border:1px solid var(--line);
+     border-radius:8px;padding:12px 14px;font-family:var(--mono);font-size:12.5px;
+     color:var(--mist);white-space:pre-wrap;word-break:break-word}
+
+  .odds{margin-top:26px;border:1.5px solid var(--ink);border-radius:12px;
+     background:var(--card);padding:16px 20px;font-size:14.5px;color:var(--mist)}
+  .odds b{color:var(--ink);font-weight:500}
+
+  .empty{background:var(--card);border:1px dashed var(--line);border-radius:14px;
+     padding:32px;text-align:center;color:var(--mist);margin-top:16px}
+
+  .statgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-top:14px}
+  .stat{background:var(--paper);border-radius:10px;padding:14px 16px}
+  .stat .l{font-size:13px;color:var(--mist)}
+  .stat .v{font-family:var(--mono);font-size:22px;font-weight:500;margin-top:2px}
+  .stat .v.pos{color:var(--tide)} .stat .v.neg{color:var(--stop)}
+  .statusline{font-family:var(--mono);font-size:12.5px;color:var(--mist);margin-top:10px}
+  .prodrow{display:flex;align-items:center;gap:12px;padding:11px 0;border-top:1px dashed var(--line);font-size:14.5px}
+  .prodrow:first-of-type{border-top:0}
+  .prodrow .t{flex:1;min-width:140px}
+  .prodrow .m{font-family:var(--mono);font-size:13px}
+  .dot.stop{background:var(--stop)} .dot.pending{background:var(--watch)}
+  .inline{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+  .inline input{font:inherit;font-size:14px;padding:8px 10px;border:1px solid var(--line);
+     border-radius:8px;background:var(--paper);width:110px}
+  .inline input:focus{outline:2px solid var(--tide);outline-offset:1px}
+  .inline .btn{width:auto;margin-top:0;padding:8px 14px;font-size:14px}
+  input[type=text],input[type=password],input[type=number],input[type=date]{font:inherit}
+
+  footer{border-top:1px solid var(--line);padding:24px 0 48px;font-size:13.5px;color:var(--mist)}
+</style>
+</head>
+<body>
+
+<header><div class="wrap nav">
+  <div class="mark">T<span>~</span>IDE · MISSION CONTROL</div>
+  <button id="signout" class="hidden">Sign out</button>
+</div></header>
+
+<main class="wrap">
+
+  <!-- STATE 1: signed out -->
+  <div id="view-login">
+    <h1>Sign in</h1>
+    <p class="sub">No passwords here. Enter your email and we'll send a one-tap sign-in link.</p>
+    <div class="authcard">
+      <form id="loginform" novalidate>
+        <label for="lemail" style="font-size:14px;font-weight:500">Email</label>
+        <input type="email" id="lemail" autocomplete="email" placeholder="you@example.com" required>
+        <button class="btn" id="loginbtn" type="submit">Email me a sign-in link</button>
+      </form>
+      <p class="msg" id="loginmsg" role="status" aria-live="polite"></p>
+      <p class="note">New here? Same box — your account is created on first sign-in.</p>
+    </div>
+  </div>
+
+  <!-- STATE 2: signed in, not an active member -->
+  <div id="view-locked" class="hidden">
+    <h1>Almost there</h1>
+    <p class="sub">You're signed in as <span id="lockedemail" style="font-family:var(--mono)"></span>,
+       but this account isn't active yet.</p>
+    <div class="authcard">
+      <p style="font-size:15px">Membership unlocks the weekly picks, the evidence behind
+         every score, and the coach's briefings.</p>
+      <a id="paylink" href="#"><button class="btn" type="button">Activate membership</button></a>
+      <button class="btn secondary" id="recheck" type="button">I already paid — check again</button>
+      <p class="msg" id="lockedmsg" role="status" aria-live="polite"></p>
+      <p class="note">Payments can take a minute to register. The price you see at
+         checkout is the whole price — no credits, no add-ons. Cancel anytime from
+         the payment portal link in your receipt email.</p>
+    </div>
+  </div>
+
+  <!-- STATE 3: active member -->
+  <div id="view-dash" class="hidden">
+    <h1 id="greeting">This week</h1>
+    <p class="sub" id="weekline"></p>
+
+    <div class="coach">
+      <div class="who">Your coach</div>
+      <div class="body" id="coachbody"><p style="color:var(--mist)">Loading briefing…</p></div>
+    </div>
+
+    <div class="sectionlabel" id="pickslabel">This week's picks</div>
+    <div id="picks"></div>
+
+    <div class="sectionlabel">Your store · money you actually made</div>
+    <div id="storearea"><p style="color:var(--mist);font-size:14.5px">Loading…</p></div>
+
+    <div class="sectionlabel">Protection · Sentinel watches so you can sleep</div>
+    <div id="protectarea"><p style="color:var(--mist);font-size:14.5px">Loading…</p></div>
+
+    <div class="sectionlabel">Operations · one-tap decisions, hard limits</div>
+    <div id="opsarea"><p style="color:var(--mist);font-size:14.5px">Loading…</p></div>
+
+    <div class="sectionlabel">Creators · commission beats ad spend</div>
+    <div id="crewarea"><p style="color:var(--mist);font-size:14.5px">Loading…</p></div>
+
+    <div class="odds"><b>The honest part, always visible:</b> these are research
+      leads, not guarantees. Most product tests fail — that's normal. Test small,
+      use money you can afford to lose, and kill losers fast.</div>
+  </div>
+
+</main>
+
+<footer><div class="wrap">Research tools, not financial advice. Every score shows
+  its evidence; missing data is stated, never hidden.</div></footer>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script>
+  // ── Setup: paste your values (README, Phase 2) ──
+  const SUPABASE_URL = "PASTE_YOUR_SUPABASE_PROJECT_URL";
+  const SUPABASE_ANON_KEY = "PASTE_YOUR_SUPABASE_ANON_KEY";
+  const STRIPE_PAYMENT_LINK = "PASTE_YOUR_STRIPE_PAYMENT_LINK_URL";
+
+  const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  const $ = (id) => document.getElementById(id);
+  const show = (id) => ["view-login","view-locked","view-dash"]
+      .forEach(v => $(v).classList.toggle("hidden", v !== id));
+
+  // Tiny, safe markdown-ish renderer for coach briefings (headings, bold, lists)
+  function renderBriefing(md){
+    const esc = md.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+    const lines = esc.split("\n"); let html = "", inList = false;
+    for (const raw of lines){
+      const line = raw.replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
+      if (line.startsWith("### ")) { if(inList){html+="</ul>";inList=false;} html += `<h3>${line.slice(4)}</h3>`; }
+      else if (line.startsWith("- ")) { if(!inList){html+="<ul>";inList=true;} html += `<li>${line.slice(2)}</li>`; }
+      else if (line.trim()==="") { if(inList){html+="</ul>";inList=false;} }
+      else { if(inList){html+="</ul>";inList=false;} html += `<p>${line}</p>`; }
+    }
+    if (inList) html += "</ul>";
+    return html;
+  }
+
+  function plainEvidence(ev){
+    const out = [];
+    if (ev.trend_series) out.push(
+      `Search interest: ${ev.trend_series.slope > 0 ? "rising" : "flat/declining"}` +
+      (ev.trend_series.peak_recent ? ", and the peak is recent" : ""));
+    if (ev.reddit) out.push(
+      `People talking about it: ${ev.reddit.mentions_30d} mentions in 30 days` +
+      (ev.reddit.organic_ratio >= 0.8 ? " (looks organic)" : ""));
+    if (typeof ev.meta_ads === "string") out.push("Ad competition: no data yet — score capped to stay honest");
+    else if (ev.meta_ads) out.push(`Ad competition: ${ev.meta_ads.active_ads} active ads found`);
+    if (ev.logistics) out.push(`Shipping reality: ${ev.logistics}`);
+    out.push(`Sources reporting: ${ev.sources_reporting ?? "n/a"} · model v${ev.model_version ?? "?"}`);
+    return out.join("\n");
+  }
+
+  const WARNINGS = {
+    "flagged:children_products": "Heads up: this is a children's product. Safety rules are strict and penalties are serious — only sell it if you understand the requirements.",
+    "flagged:battery_or_mains_electrical": "Heads up: this plugs in or contains batteries. Fire risk means higher liability — choose suppliers with real certifications.",
+    "flagged:skin_applied_cosmetic": "Heads up: this goes on skin. Never make health claims in ads, and vet the supplier's documentation.",
+  };
+
+  const fmt = new Intl.NumberFormat("en-US",{style:"currency",currency:"USD"});
+  const esc = (s) => String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+
+  function renderConnect(msg=""){
+    $("storearea").innerHTML = `
+      <div class="pick">
+        <p style="font-size:15px">Connect your Shopify store and TIDE keeps your real
+          profit — revenue minus product costs, estimated fees, refunds, and your ad
+          spend — updated daily. No vanity numbers.</p>
+        <details style="margin-top:10px"><summary>How to get your token (2 minutes)</summary>
+          <div class="evidence">In your Shopify admin: Settings → Apps and sales channels →
+Develop apps → Create an app (call it "TIDE") → Configure Admin API scopes →
+tick read_orders and read_products → Install app → Reveal the Admin API access
+token once and paste it below. The token is write-only here: it can be saved,
+never read back or displayed — not even to you.</div></details>
+        <div class="inline" style="margin-top:14px">
+          <input type="text" id="shopdomain" placeholder="yourstore.myshopify.com" style="width:230px" autocomplete="off">
+          <input type="password" id="shoptoken" placeholder="Admin API token" style="width:200px" autocomplete="off">
+          <button class="btn" id="connectbtn" type="button" style="width:auto">Connect store</button>
+        </div>
+        <p class="msg ${msg.startsWith("Connected")?"ok":"err"}" id="storemsg">${esc(msg)}</p>
+      </div>`;
+    $("connectbtn").addEventListener("click", connectStore);
+  }
+
+  async function connectStore(){
+    const domain = $("shopdomain").value.trim().toLowerCase()
+        .replace(/^https?:\/\//,"").replace(/\/.*/,"");
+    const token = $("shoptoken").value.trim();
+    const m = $("storemsg"); m.className = "msg";
+    if (!/^[a-z0-9][a-z0-9-]*\.myshopify\.com$/.test(domain)){
+      m.textContent = "The address should look like yourstore.myshopify.com."; m.classList.add("err"); return;
+    }
+    if (token.length < 20){
+      m.textContent = "That token looks too short — copy the whole Admin API token."; m.classList.add("err"); return;
+    }
+    $("connectbtn").disabled = true;
+    const { error } = await sb.from("stores").insert({ shop_domain: domain, access_token: token });
+    $("connectbtn").disabled = false;
+    if (error){
+      m.textContent = error.code === "23505"
+        ? "That store is already connected."
+        : "Couldn't save the connection. Check the address and try again.";
+      m.classList.add("err");
+    } else { loadStore(); }
+  }
+
+  async function loadStore(){
+    const { data: st } = await sb.from("store_status")
+      .select("store_id, shop_domain, last_sync, orders_30d, note")
+      .order("store_id").limit(1);
+    if (!st || !st.length){ renderConnect(); return; }
+    const s = st[0];
+
+    const since = new Date(Date.now() - 6*86400000).toISOString().slice(0,10);
+    const today = new Date().toISOString().slice(0,10);
+    const { data: rows } = await sb.from("pnl_daily")
+      .select("day, product_key, product_title, units, revenue, cogs, fees, ad_spend, profit")
+      .eq("store_id", s.store_id).gte("day", since).order("day",{ascending:false});
+    const R = rows || [];
+
+    const sum = (f, cond=()=>true) => R.filter(cond).reduce((a,r)=>a+(Number(r[f])||0),0);
+    const profitToday = R.filter(r=>r.day===today && r.profit!==null)
+                         .reduce((a,r)=>a+Number(r.profit),0);
+    const profit7 = R.filter(r=>r.profit!==null).reduce((a,r)=>a+Number(r.profit),0);
+    const needsCost = [...new Map(R.filter(r=>r.product_key && r.cogs===null)
+                        .map(r=>[r.product_key,r.product_title])).entries()];
+
+    const prod = {};
+    for (const r of R.filter(r=>r.product_key)){
+      const p = prod[r.product_key] ??= {title:r.product_title, units:0, revenue:0, profit:0, missing:false};
+      p.units += r.units; p.revenue += Number(r.revenue);
+      if (r.profit===null) p.missing = true; else p.profit += Number(r.profit);
+    }
+    const overhead = -sum("profit", r=>!r.product_key);
+
+    $("storearea").innerHTML = `
+      <div class="pick">
+        <div class="statusline">${esc(s.shop_domain)} ·
+          ${s.last_sync ? "last sync " + new Date(s.last_sync).toLocaleString() : "first sync within 24h"}
+          ${s.orders_30d!=null ? " · " + s.orders_30d + " orders in 30d" : ""}</div>
+        <div class="statgrid">
+          <div class="stat"><div class="l">Profit today</div>
+            <div class="v ${profitToday>=0?"pos":"neg"}">${fmt.format(profitToday)}</div></div>
+          <div class="stat"><div class="l">Profit, last 7 days</div>
+            <div class="v ${profit7>=0?"pos":"neg"}">${fmt.format(profit7)}</div></div>
+          <div class="stat"><div class="l">Fees + ads + refunds, 7d</div>
+            <div class="v">${fmt.format(overhead)}</div></div>
+        </div>
+        ${needsCost.length ? `
+          <div class="warn" style="margin-top:14px">To show true profit, enter what each
+            unit costs you (product + shipping). ${needsCost.length} product(s) waiting:</div>
+          ${needsCost.map(([k,t])=>`
+            <div class="prodrow"><span class="dot pending"></span>
+              <span class="t">${esc(t)}</span>
+              <span class="inline">$ <input type="number" min="0" step="0.01"
+                 id="cost-${esc(k)}" placeholder="per unit">
+              <button class="btn" style="width:auto" data-key="${esc(k)}"
+                 data-title="${esc(t)}" onclick="saveCost(this,${s.store_id})">Save</button></span>
+            </div>`).join("")}` : ""}
+        ${Object.keys(prod).length ? `
+          <div class="sectionlabel" style="margin:20px 0 4px">Products, last 7 days</div>
+          ${Object.entries(prod).sort((a,b)=>(b[1].profit)-(a[1].profit)).map(([k,p])=>{
+            const cls = p.missing ? "pending" : (p.profit>0 ? "test" : (p.profit<0 ? "stop" : "pending"));
+            const label = p.missing ? "needs cost" :
+              (p.profit>0 ? fmt.format(p.profit)+" profit" :
+               p.profit<0 ? fmt.format(p.profit)+" — losing, consider stopping its ads" : fmt.format(0));
+            return `<div class="prodrow"><span class="dot ${cls}"></span>
+              <span class="t">${esc(p.title)}</span>
+              <span class="m">${p.units} sold · ${fmt.format(p.revenue)} revenue · ${label}</span></div>`;
+          }).join("")}` : `<p style="color:var(--mist);font-size:14.5px;margin-top:12px">
+            No orders in the window yet — numbers appear after the next daily sync.</p>`}
+        <div class="sectionlabel" style="margin:20px 0 4px">Log ad spend</div>
+        <div class="inline">
+          <input type="date" id="adday" value="${today}">
+          $ <input type="number" min="0" step="0.01" id="adamt" placeholder="amount">
+          <button class="btn" style="width:auto" type="button" id="adbtn">Log it</button>
+          <span class="msg" id="admsg" style="margin:0"></span>
+        </div>
+        <p class="note">Ad spend is manual for now — log yesterday's total each morning.
+          Fees are estimated (2.9% + $0.30/order) and labeled as estimates everywhere.</p>
+      </div>`;
+    $("adbtn").addEventListener("click", async ()=>{
+      const amt = parseFloat($("adamt").value), day = $("adday").value;
+      const m = $("admsg"); m.className = "msg";
+      if (!(amt>=0) || !day){ m.textContent="Enter a date and amount."; m.classList.add("err"); return; }
+      const { error } = await sb.from("ad_spend").insert({ store_id: s.store_id, day, amount: amt });
+      m.textContent = error ? "Couldn't save — try again." : "Logged. Numbers update on the next sync.";
+      m.classList.add(error ? "err" : "ok");
+      if (!error) $("adamt").value = "";
+    });
+  }
+
+  window.saveCost = async (btn, storeId) => {
+    const key = btn.dataset.key, title = btn.dataset.title;
+    const val = parseFloat(document.getElementById("cost-"+key).value);
+    if (!(val>=0)) return;
+    btn.disabled = true; btn.textContent = "Saving…";
+    const { error } = await sb.from("product_costs")
+      .upsert({ store_id: storeId, product_key: key, product_title: title, unit_cost: val },
+              { onConflict: "store_id,product_key" });
+    btn.textContent = error ? "Retry" : "Saved — updates on next sync";
+    btn.disabled = false;
+  };
+
+  // ── Protection (Sentinel) ──
+  const THRESH = {
+    disputes: [[0.0065,"stop"],[0.0050,"stop"],[0.0030,"pending"]],
+    refunds:  [[0.15,"stop"],[0.10,"stop"],[0.05,"pending"]],
+    shipping: [[0.20,"stop"],[0.10,"stop"],[0.05,"pending"]],
+  };
+  const dotFor = (kind, rate) => {
+    if (rate === null || rate === undefined) return "pending";
+    for (const [t, c] of THRESH[kind]) if (rate >= t) return c;
+    return "test";
+  };
+  const pct = (r, d=1) => (r===null||r===undefined) ? "no data yet" : (r*100).toFixed(d)+"%";
+
+  // JS mirror of agents/tide/guardrails/ad_claims.py — keep the two in sync.
+  const AD_RULES = [
+    ["health claim", /\b(cures?|heals?|treats?|prevents?|reverses?|clinically proven|fda[- ]approved|pain[- ]?free|anti[- ]?aging|lose \d+ ?(lbs|pounds|kg)|melts? fat|detox(es|ify)?)\b/i,
+     "Health or medical outcome claims get ads rejected and can bring regulator attention. Describe what the product does physically instead."],
+    ["income claim", /\b((make|earn)\s+\$?\d[\d,]*\s*(a|per|\/)\s*(day|week|month)|passive income|financial freedom|get rich|guaranteed (income|profit|results))\b/i,
+     "Income promises are the fastest route to platform bans. Cut the promise; show the product."],
+    ["absolute guarantee", /\b(100% (guaranteed|safe|effective)|never fails?|works? every time|risk[- ]free|no risk)\b/i,
+     "Absolute guarantees read as deceptive. Use honest specifics: materials, dimensions, what it does."],
+    ["fake urgency", /\b(only \d+ left|selling out (fast|now)|today only|last chance|offer ends (tonight|today|soon))\b/i,
+     "Urgency that isn't literally true is deceptive. If the deadline or stock number is real, say the real one; otherwise remove it."],
+    ["before/after framing", /\b(before and after|before\/after|transformation (photo|pic))\b/i,
+     "Before/after framing is restricted in most ad categories. Show the product in use instead."],
+    ["unproven superlative", /\b(the best|world'?s (best|first|only)|#1|number one)\b/i,
+     "Unproven superlatives invite takedowns. Swap for a specific, checkable fact."],
+    ["testimonial framing", /\b(i bought this and|as a (real )?customer|verified buyer says)\b/i,
+     "If this is generated content, testimonial framing makes it a fake review — banned. Frame it as an ad or demonstration."],
+  ];
+
+  async function loadProtection(){
+    const { data: st } = await sb.from("store_status").select("store_id").order("store_id").limit(1);
+    if (!st || !st.length){
+      $("protectarea").innerHTML = `<div class="pick"><p style="font-size:15px;color:var(--mist)">
+        Connect your store above and Sentinel starts watching your dispute rate,
+        refunds, and shipping speed every day — and warns you long before
+        processors or platforms act.</p></div>`;
+      wireAdCheck(); return;
+    }
+    const sid = st[0].store_id;
+    const [{ data: pr }, { data: al }] = await Promise.all([
+      sb.from("protection").select("*").eq("store_id", sid).maybeSingle(),
+      sb.from("alerts").select("id,kind,severity,title,body,created_at")
+        .eq("store_id", sid).eq("resolved", false).order("created_at",{ascending:false}),
+    ]);
+    const note = pr?.details?.min_sample_note;
+    const today = new Date().toISOString().slice(0,10);
+
+    $("protectarea").innerHTML = `
+      <div class="pick">
+        <div class="statgrid">
+          <div class="stat"><div class="l"><span class="dot ${dotFor("disputes",pr?.dispute_rate)}" style="display:inline-block;margin-right:6px"></span>Dispute rate, 30d</div>
+            <div class="v">${pct(pr?.dispute_rate,2)}</div>
+            <div class="l" style="margin-top:2px">${pr?.dispute_source ? "source: "+pr.dispute_source.replace("_"," ") : ""}</div></div>
+          <div class="stat"><div class="l"><span class="dot ${dotFor("refunds",pr?.refund_rate)}" style="display:inline-block;margin-right:6px"></span>Refund rate, 30d</div>
+            <div class="v">${pct(pr?.refund_rate,0)}</div></div>
+          <div class="stat"><div class="l"><span class="dot ${dotFor("shipping",pr?.late_rate)}" style="display:inline-block;margin-right:6px"></span>Shipping late, 30d</div>
+            <div class="v">${pct(pr?.late_rate,0)}</div></div>
+        </div>
+        <div class="statusline">${pr?.checked_at ? "last checked " + new Date(pr.checked_at).toLocaleString() : "first check runs with the next daily sync"}
+          ${note ? " · " + esc(note) : ""}</div>
+
+        ${(al||[]).length ? al.map(a=>`
+          <div class="warn" style="margin-top:12px">
+            <strong>${esc(a.title)}</strong><br>${esc(a.body)}
+            <div style="margin-top:8px"><button class="btn" style="width:auto;padding:7px 12px;font-size:13.5px"
+              onclick="resolveAlert(${a.id}, this)">Mark handled</button></div>
+          </div>`).join("")
+          : `<p style="color:var(--mist);font-size:14.5px;margin-top:12px">No open alerts. Quiet is good.</p>`}
+
+        <div class="sectionlabel" style="margin:20px 0 4px">Log a dispute by hand</div>
+        <div class="inline">
+          <input type="date" id="dpday" value="${today}">
+          <input type="text" id="dpsrc" placeholder="paypal / stripe / other" style="width:150px">
+          <button class="btn" style="width:auto" type="button" id="dpbtn">Log dispute</button>
+          <span class="msg" id="dpmsg" style="margin:0"></span>
+        </div>
+        <p class="note">Use this if you take payments outside Shopify Payments —
+          Sentinel counts these in your rate so the radar stays honest.</p>
+
+        <div class="sectionlabel" style="margin:20px 0 4px">Check my ad before it runs</div>
+        <textarea id="adtext" rows="3" placeholder="Paste your ad text or product page copy…"
+          style="width:100%;font:inherit;font-size:14.5px;padding:10px 12px;border:1px solid var(--line);border-radius:8px;background:var(--paper)"></textarea>
+        <div class="inline" style="margin-top:8px">
+          <button class="btn" style="width:auto" type="button" id="adcheckbtn">Check it</button>
+        </div>
+        <div id="adresult"></div>
+      </div>`;
+
+    $("dpbtn").addEventListener("click", async ()=>{
+      const m=$("dpmsg"); m.className="msg";
+      const day=$("dpday").value, source=($("dpsrc").value.trim()||"other").toLowerCase();
+      if(!day){ m.textContent="Pick a date."; m.classList.add("err"); return; }
+      const { error } = await sb.from("disputes_log").insert({ store_id: sid, day, source });
+      m.textContent = error ? "Couldn't save — try again." : "Logged. Counted at the next daily check.";
+      m.classList.add(error?"err":"ok");
+    });
+    wireAdCheck();
+  }
+
+  function wireAdCheck(){
+    const btn = $("adcheckbtn"); if (!btn) return;
+    btn.addEventListener("click", ()=>{
+      const text = $("adtext").value;
+      const flags = AD_RULES.filter(([,rx])=>rx.test(text));
+      $("adresult").innerHTML = !text.trim() ? "" : flags.length
+        ? flags.map(([name,rx,why])=>{
+            const m = text.match(rx);
+            return `<div class="warn" style="margin-top:10px"><strong>${esc(name)}</strong>
+              — found “${esc(m[0])}”.<br>${esc(why)}</div>`;
+          }).join("")
+        : `<p class="msg ok" style="margin-top:10px">Looks clean — none of the common
+           rejection or legal triggers found. (A pass here isn't legal advice, but
+           the obvious traps are avoided.)</p>`;
+    });
+  }
+
+  window.resolveAlert = async (id, btn) => {
+    btn.disabled = true; btn.textContent = "Saving…";
+    const { error } = await sb.from("alerts").update({ resolved: true }).eq("id", id);
+    if (error){ btn.disabled = false; btn.textContent = "Retry"; }
+    else btn.closest(".warn").remove();
+  };
+
+  // ── Operations (action queue) ──
+  window._sid = null;
+
+  async function loadOps(){
+    const { data: st } = await sb.from("store_status").select("store_id").order("store_id").limit(1);
+    if (!st || !st.length){
+      $("opsarea").innerHTML = `<div class="pick"><p style="font-size:15px;color:var(--mist)">
+        Connect your store above to unlock one-tap actions: send picks to your
+        store as drafts, and approve or decline the system's suggestions —
+        nothing ever runs without your tap, and a daily cap plus a kill switch
+        sit under everything.</p></div>`;
+      return;
+    }
+    const sid = st[0].store_id; window._sid = sid;
+    const [{ data: os }, { data: acts }] = await Promise.all([
+      sb.from("op_settings").select("kill_switch,max_actions_per_day").eq("store_id", sid).maybeSingle(),
+      sb.from("actions").select("id,kind,payload,reason,status,error,result,created_at")
+        .eq("store_id", sid).order("created_at",{ascending:false}).limit(20),
+    ]);
+    const kill = os?.kill_switch ?? false;
+    const cap = os?.max_actions_per_day ?? 5;
+    const A = acts || [];
+    const proposed = A.filter(a=>a.status==="proposed");
+    const recent = A.filter(a=>a.status!=="proposed").slice(0,8);
+    const label = (a)=> a.kind==="import_product"
+      ? `Add “${esc(a.payload?.title||"product")}” to your store as a draft`
+      : `Pause “${esc(a.payload?.product_title||a.payload?.shopify_product_id||"product")}”`;
+
+    $("opsarea").innerHTML = `
+      <div class="pick">
+        <div class="inline" style="justify-content:space-between">
+          <span style="font-size:14.5px">
+            <span class="dot ${kill?"stop":"test"}" style="display:inline-block;margin-right:6px"></span>
+            ${kill ? "Kill switch is ON — nothing will execute until you turn it off."
+                   : "Running normally — approved actions execute on the next cycle (every ~6h)."}
+          </span>
+          <button class="btn secondary" style="width:auto" id="killbtn" type="button">
+            ${kill ? "Turn kill switch off" : "Kill switch: stop everything"}</button>
+        </div>
+        <div class="inline" style="margin-top:12px">
+          <span style="font-size:14px;color:var(--mist)">Daily action limit (enforced in the
+            execution code, not just here):</span>
+          <input type="number" id="capval" min="0" max="50" value="${cap}" style="width:70px">
+          <button class="btn" style="width:auto" type="button" id="capbtn">Save limit</button>
+          <span class="msg" id="opsmsg" style="margin:0"></span>
+        </div>
+
+        ${proposed.length ? `<div class="sectionlabel" style="margin:18px 0 4px">Waiting for your decision</div>` : ""}
+        ${proposed.map(a=>`
+          <div class="warn" style="margin-top:10px">
+            <strong>${label(a)}</strong><br>${esc(a.reason||"")}
+            <div class="inline" style="margin-top:10px">
+              <button class="btn" style="width:auto;padding:8px 14px" onclick="decideAction(${a.id},'approved',this)">Approve</button>
+              <button class="btn secondary" style="width:auto;padding:8px 14px" onclick="decideAction(${a.id},'declined',this)">Decline</button>
+            </div>
+          </div>`).join("")}
+
+        ${recent.length ? `<div class="sectionlabel" style="margin:18px 0 4px">Recent activity</div>` : ""}
+        ${recent.map(a=>{
+          const cls = a.status==="executed" ? "test" : a.status==="failed" ? "stop" : "pending";
+          const line = a.status==="approved" ? "queued — runs within ~6 hours"
+            : a.status==="executed" ? (a.result?.admin_note ? esc(a.result.admin_note) : "done")
+            : a.status==="failed" ? esc(a.error||"failed") + " Fix it, then queue it again."
+            : "declined";
+          return `<div class="prodrow"><span class="dot ${cls}"></span>
+            <span class="t">${label(a)}</span>
+            <span class="m" style="max-width:52%">${line}</span></div>`;
+        }).join("")}
+        ${!proposed.length && !recent.length ? `<p style="color:var(--mist);font-size:14.5px;margin-top:12px">
+          Nothing in the queue. Tap “Send to my store” on any pick above to start.</p>` : ""}
+        <p class="note" style="margin-top:12px">Every action here is reversible: imports arrive as
+          unpublished drafts, and pausing just sets a product back to draft. Nothing spends
+          money, and nothing runs without your tap.</p>
+      </div>`;
+
+    $("killbtn").addEventListener("click", async ()=>{
+      const flip = !kill;
+      const sure = flip ? true : confirm(
+        "Turn the kill switch off? Approved actions will start executing again on the next cycle.");
+      if (!sure) return;
+      await sb.from("op_settings").upsert({ store_id: sid, kill_switch: flip,
+        max_actions_per_day: cap }, { onConflict: "store_id" });
+      loadOps();
+    });
+    $("capbtn").addEventListener("click", async ()=>{
+      const v = parseInt($("capval").value, 10);
+      const m = $("opsmsg"); m.className="msg";
+      if (!(v>=0 && v<=50)){ m.textContent="Pick a number from 0 to 50."; m.classList.add("err"); return; }
+      if (!confirm(`Set the daily limit to ${v} action(s)? This is the hard cap the
+executor obeys — it will refuse anything beyond it in any 24-hour window.`)) return;
+      const { error } = await sb.from("op_settings").upsert({ store_id: sid,
+        kill_switch: kill, max_actions_per_day: v }, { onConflict: "store_id" });
+      m.textContent = error ? "Couldn't save — try again." : "Limit saved.";
+      m.classList.add(error?"err":"ok");
+    });
+  }
+
+  window.decideAction = async (id, decision, btn) => {
+    btn.disabled = true; btn.textContent = "Saving…";
+    const { error } = await sb.from("actions")
+      .update({ status: decision, decided_at: new Date().toISOString() }).eq("id", id);
+    if (error){ btn.disabled = false; btn.textContent = "Retry"; return; }
+    loadOps();
+  };
+
+  window.queueImport = async (productId, name, btn) => {
+    if (!window._sid){
+      btn.textContent = "Connect your store first (below)"; return;
+    }
+    btn.disabled = true; btn.textContent = "Queuing…";
+    const copy = (angleMapGlobal[productId]?.[0]?.page_copy) || "";
+    const body_html = copy ? copy.split("\n").filter(Boolean)
+        .map(pn=>`<p>${esc(pn)}</p>`).join("") : "";
+    const title = name.replace(/\b\w/g, c=>c.toUpperCase());
+    const { error } = await sb.from("actions").insert({
+      store_id: window._sid, kind: "import_product",
+      payload: { title, body_html },
+      reason: "You sent this pick to your store from Mission Control.",
+      status: "approved", proposed_by: "member",
+    });
+    btn.textContent = error ? "Couldn't queue — retry" : "Queued — lands as a draft within ~6h";
+    if (error) btn.disabled = false; else loadOps();
+  };
+  let angleMapGlobal = {};
+
+  // ── Creators (Recruiter) ──
+  function vet(c){
+    if (!c.followers || !c.avg_views) return ["pending","Add followers and average views to score this creator."];
+    const eng = c.avg_views / c.followers;
+    if (eng >= 0.08) return ["test", `Strong: ~${Math.round(eng*100)}% of followers actually watch. Invite.`];
+    if (eng >= 0.03) return ["pending", `Middling: ~${Math.round(eng*100)}% watch rate. Worth a try if the niche fits.`];
+    return ["stop", `Weak: ~${Math.round(eng*100)}% watch rate — big number, small audience. Skip.`];
+  }
+  function sampleState(s){
+    const days = Math.floor((Date.now() - new Date(s.sent_day)) / 86400000);
+    const roi = Number(s.attributed_revenue) - Number(s.cost);
+    if (Number(s.attributed_revenue) > 0)
+      return [roi >= 0 ? "test" : "pending", `${fmt.format(s.attributed_revenue)} attributed · ${roi>=0?"earning":"not yet covering"} the ${fmt.format(s.cost)} sample`];
+    if (s.posted) return ["pending", `posted — tracking sales (day ${days})`];
+    if (days >= 30) return ["stop", `no post after ${days} days — stop sending samples here`];
+    return ["pending", `waiting on a post (day ${days} of 30)`];
+  }
+
+  async function loadCrew(){
+    const [{ data: pb }, storeRes] = await Promise.all([
+      sb.from("playbooks").select("product_id, week, search_queries, outreach, disclosure_note, products(name)")
+        .order("created_at",{ascending:false}).limit(10),
+      sb.from("store_status").select("store_id").order("store_id").limit(1),
+    ]);
+    const sid = storeRes.data?.[0]?.store_id || null;
+    let creators = [], samples = [];
+    if (sid){
+      const [c1, c2] = await Promise.all([
+        sb.from("creators").select("*").eq("store_id", sid).order("created_at",{ascending:false}),
+        sb.from("samples").select("*").eq("store_id", sid).order("sent_day",{ascending:false}).limit(15),
+      ]);
+      creators = c1.data || []; samples = c2.data || [];
+    }
+    const cname = Object.fromEntries(creators.map(c=>[c.id, c.handle]));
+
+    $("crewarea").innerHTML = `
+      <div class="pick">
+        <p style="font-size:15px;color:var(--mist)">Creators promote for commission —
+          you pay for results, not clicks. The playbooks below say exactly where to
+          look and what to say; the scorecard and sample tracker keep it honest.</p>
+
+        ${(pb||[]).length ? `<div class="sectionlabel" style="margin:16px 0 4px">Playbooks for current picks</div>` : ""}
+        ${(pb||[]).map(b=>`
+          <details><summary>${esc((b.products?.name||"product").replace(/\b\w/g,c=>c.toUpperCase()))} — where to look + what to say</summary>
+            <div class="evidence" style="margin-top:8px">SEARCH THESE ON TIKTOK:
+${(b.search_queries||[]).map(q=>"  · "+esc(q)).join("\n")}
+
+${(b.outreach||[]).map(o=>esc(o.name).toUpperCase()+":\n"+esc(o.message)).join("\n\n")}
+
+${esc(b.disclosure_note)}</div>
+          </details>`).join("")}
+
+        <div class="sectionlabel" style="margin:18px 0 4px">Your creator list</div>
+        ${sid ? `
+          <div class="inline">
+            <input type="text" id="crhandle" placeholder="@handle" style="width:130px">
+            <input type="number" id="crfoll" placeholder="followers" style="width:110px" min="0">
+            <input type="number" id="crviews" placeholder="avg views" style="width:110px" min="0">
+            <input type="text" id="crniche" placeholder="niche" style="width:110px">
+            <button class="btn" style="width:auto" type="button" id="craddbtn">Add</button>
+            <span class="msg" id="crmsg" style="margin:0"></span>
+          </div>
+          ${creators.map(c=>{
+            const [cls, line] = vet(c);
+            return `<div class="prodrow"><span class="dot ${cls}"></span>
+              <span class="t">${esc(c.handle)}${c.niche?` · <span style="color:var(--mist)">${esc(c.niche)}</span>`:""}</span>
+              <span class="m" style="max-width:55%">${esc(line)}</span></div>`;
+          }).join("") || `<p style="color:var(--mist);font-size:14.5px;margin-top:10px">
+            Use a playbook above, find three candidates, add them here.</p>`}
+
+          <div class="sectionlabel" style="margin:18px 0 4px">Samples sent</div>
+          <div class="inline">
+            <select id="smcreator" style="font:inherit;font-size:14px;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--paper)">
+              <option value="">creator…</option>
+              ${creators.map(c=>`<option value="${c.id}">${esc(c.handle)}</option>`).join("")}
+            </select>
+            <input type="text" id="smprod" placeholder="product" style="width:140px">
+            $ <input type="number" id="smcost" placeholder="cost" style="width:90px" min="0" step="0.01">
+            <button class="btn" style="width:auto" type="button" id="smaddbtn">Log sample</button>
+          </div>
+          ${samples.map(s=>{
+            const [cls, line] = sampleState(s);
+            return `<div class="prodrow"><span class="dot ${cls}"></span>
+              <span class="t">${esc(cname[s.creator_id]||"?")} · ${esc(s.product_title)}</span>
+              <span class="m" style="max-width:46%">${esc(line)}</span>
+              <span class="inline">
+                ${!s.posted ? `<button class="btn secondary" style="width:auto;padding:6px 10px;font-size:13px"
+                    onclick="markPosted(${s.id}, this)">Posted</button>` : ""}
+                <input type="number" min="0" step="0.01" placeholder="+$ sales"
+                   style="width:90px" id="rev-${s.id}">
+                <button class="btn secondary" style="width:auto;padding:6px 10px;font-size:13px"
+                   onclick="addRevenue(${s.id}, ${Number(s.attributed_revenue)}, this)">Save</button>
+              </span></div>`;
+          }).join("") || `<p style="color:var(--mist);font-size:14.5px;margin-top:10px">
+            No samples yet. Rule of thumb: budget 5–10 samples per product, expect
+            most to go nowhere, and double down only on creators who post.</p>`}
+        ` : `<p style="color:var(--mist);font-size:14.5px">Connect your store above to
+          use the creator list and sample tracker.</p>`}
+      </div>`;
+
+    if (!sid) return;
+    $("craddbtn").addEventListener("click", async ()=>{
+      const m=$("crmsg"); m.className="msg";
+      const handle=$("crhandle").value.trim().replace(/^@?/, "@");
+      if (handle.length<3){ m.textContent="Enter a handle."; m.classList.add("err"); return; }
+      const { error } = await sb.from("creators").insert({
+        store_id: sid, handle,
+        followers: parseInt($("crfoll").value,10)||null,
+        avg_views: parseInt($("crviews").value,10)||null,
+        niche: $("crniche").value.trim()||null });
+      if (error){ m.textContent = error.code==="23505" ? "Already on your list." : "Couldn't save."; m.classList.add("err"); }
+      else loadCrew();
+    });
+    $("smaddbtn").addEventListener("click", async ()=>{
+      const cid=parseInt($("smcreator").value,10), prod=$("smprod").value.trim(),
+            cost=parseFloat($("smcost").value)||0;
+      if (!cid || !prod) return;
+      const { error } = await sb.from("samples").insert({
+        store_id: sid, creator_id: cid, product_title: prod, cost,
+        sent_day: new Date().toISOString().slice(0,10) });
+      if (!error) loadCrew();
+    });
+  }
+
+  window.markPosted = async (id, btn) => {
+    btn.disabled = true;
+    await sb.from("samples").update({ posted: true }).eq("id", id);
+    loadCrew();
+  };
+  window.addRevenue = async (id, current, btn) => {
+    const v = parseFloat(document.getElementById("rev-"+id).value);
+    if (!(v>0)) return;
+    btn.disabled = true;
+    await sb.from("samples").update({ attributed_revenue: current + v }).eq("id", id);
+    loadCrew();
+  };
+
+  async function loadDashboard(){
+    // Latest week that has picks
+    const { data: latest } = await sb.from("picks")
+      .select("week").order("published_at",{ascending:false}).limit(1);
+    const week = latest?.[0]?.week;
+    $("weekline").textContent = week ? `Week ${week} — new picks land every Monday.` : "";
+
+    // Coach briefing
+    const { data: br } = await sb.from("briefings")
+      .select("body").order("created_at",{ascending:false}).limit(1);
+    $("coachbody").innerHTML = br?.[0]
+      ? renderBriefing(br[0].body)
+      : "<p>Your first briefing arrives with Monday's picks.</p>";
+
+    // Picks with product + score joined
+    if (!week){ $("picks").innerHTML =
+      `<div class="empty">No picks published yet. The engine is gathering signals —
+       the first list lands on Monday.</div>`; return; }
+    const { data: rows, error } = await sb.from("picks")
+      .select("rank, product_id, products(name,guard_status,guard_reasons), scores(total,verdict,confidence,evidence)")
+      .eq("week", week).order("rank");
+    if (error){ $("picks").innerHTML =
+      `<div class="empty">Couldn't load picks. Refresh in a minute.</div>`; return; }
+
+    const ids = rows.map(r=>r.product_id);
+    const { data: cr } = ids.length
+      ? await sb.from("creatives")
+          .select("product_id, mode, angle_name, hook, script, page_copy")
+          .in("product_id", ids)
+      : { data: [] };
+    const angleMap = {};
+    for (const c of (cr||[])) (angleMap[c.product_id] ??= []).push(c);
+    angleMapGlobal = angleMap;
+
+    $("picks").innerHTML = rows.map(r => {
+      const p = r.products, s = r.scores;
+      const ev = typeof s.evidence === "string" ? JSON.parse(s.evidence) : s.evidence;
+      const warns = (p.guard_reasons || []).map(w => WARNINGS[w]).filter(Boolean);
+      const angles = angleMap[r.product_id] || [];
+      const anglesBlock = angles.length ? `
+        <details><summary>Ad angles (${angles.length}) — ready to shoot</summary>
+          ${angles.map(a=>`
+            <div class="evidence" style="margin-top:8px">${esc(a.angle_name)}${a.mode==="template" ? " · starter framework" : ""}
+
+HOOK: ${esc(a.hook)}
+
+SCRIPT: ${esc(a.script)}
+
+PAGE COPY: ${esc(a.page_copy)}</div>`).join("")}
+          <p class="note" style="margin-top:8px">Every angle was pre-checked against
+            the ad rules at generation. Edit freely — then run your final version
+            through "Check my ad" below before spending a dollar on it.</p>
+        </details>` : "";
+      return `<div class="pick">
+        <div class="pickrow">
+          <span class="dot ${s.verdict}"></span>
+          <span class="pickname">${p.name.replace(/\b\w/g,c=>c.toUpperCase())}</span>
+          <span class="badge ${s.verdict}">${s.verdict.toUpperCase()}</span>
+        </div>
+        <div class="pickmeta"><b>${Math.round(s.total)}</b> / 100 · confidence: ${s.confidence}</div>
+        ${warns.map(w=>`<div class="warn">${w}</div>`).join("")}
+        <details><summary>Why this score</summary>
+          <div class="evidence">${plainEvidence(ev)}</div></details>
+        ${anglesBlock}
+        ${s.verdict === "test" ? `<div style="margin-top:12px"><button class="btn secondary"
+          style="width:auto;padding:8px 14px;font-size:14px"
+          onclick="queueImport(${r.product_id}, '${esc(p.name).replace(/'/g,"\\'")}', this)">
+          Send to my store as a draft</button></div>` : ""}
+      </div>`;
+    }).join("");
+  }
+
+  async function route(){
+    const { data: { session } } = await sb.auth.getSession();
+    $("signout").classList.toggle("hidden", !session);
+    if (!session){ show("view-login"); return; }
+    const { data: me } = await sb.from("members")
+      .select("active").eq("user_id", session.user.id).maybeSingle();
+    if (me?.active){ show("view-dash"); loadDashboard(); loadStore(); loadProtection(); loadOps(); loadCrew(); }
+    else {
+      $("lockedemail").textContent = session.user.email;
+      const link = STRIPE_PAYMENT_LINK.startsWith("PASTE") ? "#" :
+        `${STRIPE_PAYMENT_LINK}?prefilled_email=${encodeURIComponent(session.user.email)}`;
+      $("paylink").href = link;
+      show("view-locked");
+    }
+  }
+
+  $("loginform").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const m = $("loginmsg"); m.className = "msg";
+    const email = $("lemail").value.trim();
+    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){
+      m.textContent = "That email doesn't look complete — check it and try again.";
+      m.classList.add("err"); return;
+    }
+    $("loginbtn").disabled = true;
+    const { error } = await sb.auth.signInWithOtp({
+      email, options: { emailRedirectTo: window.location.href.split("#")[0] }
+    });
+    $("loginbtn").disabled = false;
+    if (error){ m.textContent = "Couldn't send the link. Try again in a minute."; m.classList.add("err"); }
+    else { m.textContent = "Link sent — check your inbox (and spam, once)."; m.classList.add("ok"); }
+  });
+
+  $("recheck").addEventListener("click", async () => {
+    $("lockedmsg").textContent = "Checking…"; $("lockedmsg").className = "msg";
+    await route();
+    if (!$("view-locked").classList.contains("hidden")){
+      $("lockedmsg").textContent = "Not active yet — payments can take a minute. Try again shortly.";
+    }
+  });
+
+  $("signout").addEventListener("click", async () => { await sb.auth.signOut(); route(); });
+  sb.auth.onAuthStateChange(() => route());
+  route();
+</script>
+</body>
+</html>

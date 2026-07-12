@@ -1,0 +1,34 @@
+# Seed terms the Scout expands via Google Trends "rising related queries".
+# Keep seeds generic (categories, problems, occasions) — the engine finds the
+# specific products. Add/remove freely; the Scout adapts on the next run.
+seeds:
+  - home organization
+  - kitchen gadgets
+  - car accessories
+  - pet supplies
+  - desk setup
+  - cleaning tools
+  - posture
+  - sleep aid
+  - travel accessories
+  - phone accessories
+  - home gym
+  - camping gear
+  - garden tools
+  - bathroom upgrade
+  - laundry
+  - cat toys
+  - dog grooming
+  - office chair comfort
+  - cable management
+  - water bottle
+  - lunch box
+  - massage tool
+  - night light
+  - sunset lamp
+  - shower head
+  - makeup organizer
+  - closet storage
+  - baby-free gift ideas   # phrasing avoids children's-product flag at seed level
+  - grill accessories
+  - winter car
