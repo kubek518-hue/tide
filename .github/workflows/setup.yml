@@ -1,0 +1,105 @@
+name: "SETUP — one button does the rest"
+
+# Run this once from the Actions tab. Fill the three boxes, press Run, and it:
+#   1. writes your Supabase keys + contact email into both web pages
+#   2. turns on GitHub Pages and publishes your website
+#   3. runs the engine's first hunt (if the DATABASE_URL secret is set)
+# Re-run it anytime you change anything in the docs/ folder — it republishes.
+
+on:
+  workflow_dispatch:
+    inputs:
+      supabase_url:
+        description: "Supabase Project URL (Settings > API), like https://abcd.supabase.co"
+        required: false
+        default: ""
+      supabase_anon_key:
+        description: "Supabase anon public key (Settings > API), the long text starting eyJ"
+        required: false
+        default: ""
+      contact_email:
+        description: "Your real contact email (replaces the placeholder on the site)"
+        required: false
+        default: ""
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages-setup
+  cancel-in-progress: false
+
+jobs:
+  setup:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Write your keys into the web pages
+        env:
+          SB_URL: ${{ inputs.supabase_url }}
+          SB_KEY: ${{ inputs.supabase_anon_key }}
+          EMAIL: ${{ inputs.contact_email }}
+        run: |
+          set -e
+          if [ -n "$SB_URL" ]; then
+            sed -i "s|PASTE_YOUR_SUPABASE_PROJECT_URL|$SB_URL|g" docs/index.html docs/app.html
+            echo "Project URL written."
+          fi
+          if [ -n "$SB_KEY" ]; then
+            sed -i "s|PASTE_YOUR_SUPABASE_ANON_KEY|$SB_KEY|g" docs/index.html docs/app.html
+            echo "Anon key written."
+          fi
+          if [ -n "$EMAIL" ]; then
+            sed -i "s|hello@example.com|$EMAIL|g" docs/index.html
+            echo "Contact email written."
+          fi
+
+      - name: Save the changes back to your repository
+        run: |
+          git config user.name "tide-setup"
+          git config user.email "actions@users.noreply.github.com"
+          git add docs/
+          git commit -m "Setup: write keys and contact email into the site" || echo "Nothing new to save."
+          git push || true
+
+      - name: Turn on GitHub Pages (first run only)
+        uses: actions/configure-pages@v5
+        with:
+          enablement: true
+
+      - name: Package the website
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: docs
+
+      - name: Publish the website
+        id: deployment
+        uses: actions/deploy-pages@v4
+
+      - name: Show your website address
+        run: |
+          echo "=============================================="
+          echo "YOUR WEBSITE IS LIVE AT:"
+          echo "${{ steps.deployment.outputs.page_url }}"
+          echo "Mission Control is at:"
+          echo "${{ steps.deployment.outputs.page_url }}app.html"
+          echo "=============================================="
+
+      - name: First hunt (runs only if the DATABASE_URL secret exists)
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        run: |
+          if [ -z "$DATABASE_URL" ]; then
+            echo "DATABASE_URL secret not set yet — skipping the first hunt."
+            echo "Add the secret (guide Part 3), then run the 'scan' workflow once."
+            exit 0
+          fi
+          pip install -r agents/requirements.txt
+          cd agents && python -m tide.orchestrator scout analyst

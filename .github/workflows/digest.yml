@@ -1,0 +1,31 @@
+name: weekly digest (publisher)
+
+on:
+  schedule:
+    - cron: "0 13 * * 1"     # Mondays 13:00 UTC
+  workflow_dispatch: {}
+
+jobs:
+  digest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: agents/requirements.txt
+      - run: pip install -r agents/requirements.txt
+      - name: Publish weekly picks
+        working-directory: agents
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: python -m tide.orchestrator publisher coach creative audit recruiter
+      - name: Upload digest artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: weekly-picks
+          path: reports/*.md
+          retention-days: 90
