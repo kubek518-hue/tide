@@ -15,23 +15,46 @@
     --watch:#BA7517; --watch-soft:#FAEEDA;
     --stop:#A32D2D; --stop-soft:#FCEBEB;
     --mist:#5E6B7A; --line:#D9DEE3;
+    --btn-bg:#0E1B2C; --btn-fg:#FFFFFF; --btn-hover:#1B2C42;
+    --warn-fg:#633806;
+    --shadow:0 1px 2px rgba(14,27,44,.05), 0 10px 30px rgba(14,27,44,.07);
+    --glass:rgba(247,248,246,.82);
     --serif:"Fraunces",serif; --sans:"IBM Plex Sans",system-ui,sans-serif;
     --mono:"IBM Plex Mono",monospace;
   }
+  /* Night ocean — the same instrument after dark. Deep marine, never dead black. */
+  html[data-theme="dark"]{
+    --ink:#E8ECF1; --paper:#0B1420; --card:#111D2D;
+    --tide:#3EC29B; --tide-soft:rgba(62,194,155,.14);
+    --watch:#D9A04C; --watch-soft:rgba(217,160,76,.16);
+    --stop:#E07B7B; --stop-soft:rgba(224,123,123,.15);
+    --mist:#93A1B3; --line:#223349;
+    --btn-bg:#E8ECF1; --btn-fg:#0B1420; --btn-hover:#CBD6E2;
+    --warn-fg:#F0CD9F;
+    --shadow:0 1px 2px rgba(0,0,0,.35), 0 12px 32px rgba(0,0,0,.35);
+    --glass:rgba(11,20,32,.78);
+  }
   *{box-sizing:border-box;margin:0}
   body{background:var(--paper);color:var(--ink);font-family:var(--sans);
-       font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased}
+       font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased;
+       transition:background-color .25s ease,color .25s ease}
   .wrap{max-width:760px;margin:0 auto;padding:0 20px}
   a{color:var(--tide)}
   ::selection{background:var(--tide-soft)}
 
-  header{padding:22px 0;border-bottom:1px solid var(--line)}
-  .nav{display:flex;justify-content:space-between;align-items:center}
-  .mark{font-family:var(--mono);font-weight:500;font-size:16px;letter-spacing:.14em}
+  /* Waterline header: sticky, glass, calm */
+  header{padding:16px 0;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:20;
+     background:var(--glass);backdrop-filter:blur(10px) saturate(140%);
+     -webkit-backdrop-filter:blur(10px) saturate(140%)}
+  .nav{display:flex;justify-content:space-between;align-items:center;gap:10px}
+  .mark{font-family:var(--mono);font-weight:500;font-size:16px;letter-spacing:.14em;
+     display:flex;align-items:center;gap:9px}
+  .mark svg{flex-shrink:0}
   .mark span{color:var(--tide)}
   .nav button{font:inherit;font-size:13.5px;background:none;border:0;color:var(--mist);
      cursor:pointer;text-decoration:underline;text-underline-offset:3px}
   .nav button:hover{color:var(--ink)}
+  .navside{display:flex;gap:16px;align-items:center}
 
   main{padding:36px 0 72px}
   .hidden{display:none !important}
@@ -41,15 +64,17 @@
 
   /* Forms */
   .authcard{background:var(--card);border:1px solid var(--line);border-radius:14px;
-     padding:28px;max-width:440px;margin-top:28px}
+     padding:28px;max-width:440px;margin-top:28px;box-shadow:var(--shadow)}
   input[type=email]{width:100%;font:inherit;padding:12px 15px;border:1px solid var(--line);
      border-radius:8px;background:var(--paper);color:var(--ink);margin-top:14px}
   input[type=email]:focus{outline:2px solid var(--tide);outline-offset:1px;border-color:var(--tide)}
   .btn{font:inherit;font-weight:500;padding:12px 20px;border:0;border-radius:8px;
-     background:var(--ink);color:#fff;cursor:pointer;margin-top:14px;width:100%}
-  .btn:hover{background:#1B2C42}
+     background:var(--btn-bg);color:var(--btn-fg);cursor:pointer;margin-top:14px;width:100%;
+     transition:background-color .18s ease,transform .18s ease,box-shadow .18s ease}
+  .btn:hover{background:var(--btn-hover);transform:translateY(-1px);box-shadow:var(--shadow)}
+  .btn:active{transform:translateY(0) scale(.985)}
   .btn:focus-visible{outline:2px solid var(--tide);outline-offset:2px}
-  .btn:disabled{opacity:.6;cursor:wait}
+  .btn:disabled{opacity:.6;cursor:wait;transform:none;box-shadow:none}
   .btn.secondary{background:var(--card);color:var(--ink);border:1px solid var(--line)}
   .btn.secondary:hover{background:var(--paper)}
   .note{font-size:13.5px;color:var(--mist);margin-top:12px}
@@ -58,7 +83,8 @@
 
   /* Coach briefing */
   .coach{background:var(--card);border:1px solid var(--line);border-radius:14px;
-     padding:24px 26px;margin-top:28px}
+     padding:24px 26px;margin-top:28px;box-shadow:var(--shadow);
+     transition:background-color .25s ease,border-color .25s ease}
   .coach .who{font-family:var(--mono);font-size:12px;letter-spacing:.12em;
      color:var(--tide);text-transform:uppercase}
   .coach .body{margin-top:10px;font-size:15.5px}
@@ -71,7 +97,8 @@
   .sectionlabel{font-family:var(--mono);font-size:12.5px;letter-spacing:.12em;
      text-transform:uppercase;color:var(--mist);margin:36px 0 12px}
   .pick{background:var(--card);border:1px solid var(--line);border-radius:14px;
-     padding:20px 22px;margin-bottom:12px}
+     padding:20px 22px;margin-bottom:12px;box-shadow:var(--shadow);
+     transition:background-color .25s ease,border-color .25s ease}
   .pickrow{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
   .dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
   .dot.test{background:var(--tide)} .dot.watch{background:var(--watch)}
@@ -82,7 +109,7 @@
   .badge.watch{background:var(--watch-soft);color:var(--watch)}
   .pickmeta{font-family:var(--mono);font-size:12.5px;color:var(--mist);margin-top:6px}
   .pickmeta b{color:var(--ink);font-size:14px}
-  .warn{margin-top:12px;background:var(--watch-soft);color:#633806;border-radius:8px;
+  .warn{margin-top:12px;background:var(--watch-soft);color:var(--warn-fg);border-radius:8px;
      padding:10px 14px;font-size:14px}
   details{margin-top:12px}
   summary{cursor:pointer;font-size:14px;color:var(--tide);font-weight:500;
@@ -97,6 +124,40 @@
   .odds{margin-top:26px;border:1.5px solid var(--ink);border-radius:12px;
      background:var(--card);padding:16px 20px;font-size:14.5px;color:var(--mist)}
   .odds b{color:var(--ink);font-weight:500}
+
+  /* v1.5 — view-the-item links + scoreboard */
+  .linkrow{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+  .linkbtn{font-family:var(--mono);font-size:12.5px;font-weight:500;color:var(--tide);
+     background:var(--tide-soft);border-radius:99px;padding:7px 14px;text-decoration:none}
+  .linkbtn{transition:transform .18s ease,filter .18s ease}
+  .linkbtn:hover{filter:brightness(.95);transform:translateY(-1px)}
+  .linkbtn:focus-visible{outline:2px solid var(--tide);outline-offset:2px}
+  .scorebtns{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;align-items:center}
+  .outcome{font-family:var(--mono);font-size:12px;font-weight:500;letter-spacing:.08em;
+     padding:3px 12px;border-radius:99px}
+  .outcome.hit{background:var(--tide-soft);color:var(--tide)}
+  .outcome.miss{background:var(--stop-soft);color:var(--stop)}
+  .lockline{font-size:14px;color:var(--mist)}
+
+  /* v2 — supplier finder + profit check */
+  .tabrow{display:flex;gap:8px;margin-top:10px}
+  .tab{font:inherit;font-size:13.5px;font-weight:500;padding:7px 14px;border-radius:99px;
+     border:1px solid var(--line);background:var(--card);color:var(--mist);cursor:pointer}
+  .tab{transition:background-color .18s ease,color .18s ease,transform .18s ease}
+  .tab:hover{transform:translateY(-1px)}
+  .tab.active{background:var(--btn-bg);color:var(--btn-fg);border-color:var(--btn-bg)}
+  .tab:focus-visible{outline:2px solid var(--tide);outline-offset:2px}
+  .estline{margin-top:10px;font-size:14.5px;font-weight:500}
+
+  /* v2 — Ripple Lab: an experiment, visibly quarantined from the real picks */
+  .experiment{border-style:dashed}
+  .expbadge{font-family:var(--mono);font-size:11px;font-weight:500;letter-spacing:.12em;
+     padding:3px 10px;border-radius:99px;background:var(--watch-soft);color:var(--watch)}
+  .conf{font-family:var(--mono);font-size:11px;font-weight:500;letter-spacing:.08em;
+     padding:3px 10px;border-radius:99px}
+  .conf.low{background:var(--paper);color:var(--mist);border:1px solid var(--line)}
+  .conf.medium{background:var(--watch-soft);color:var(--watch)}
+  .ripline{border-top:1px dashed var(--line);padding:14px 0}
 
   .empty{background:var(--card);border:1px dashed var(--line);border-radius:14px;
      padding:32px;text-align:center;color:var(--mist);margin-top:16px}
@@ -120,13 +181,37 @@
   input[type=text],input[type=password],input[type=number],input[type=date]{font:inherit}
 
   footer{border-top:1px solid var(--line);padding:24px 0 48px;font-size:13.5px;color:var(--mist)}
+
+  @media(max-width:480px){
+    .pick,.coach{padding:16px 16px}
+    h1{font-size:24px}
+    main{padding:28px 0 56px}
+  }
+  @media (prefers-reduced-motion: reduce){
+    *,*::before,*::after{transition:none !important;animation:none !important}
+    html{scroll-behavior:auto}
+  }
 </style>
+<script>
+  // Theme before first paint: your saved choice wins; otherwise follow the device.
+  (function(){
+    try{
+      var saved = localStorage.getItem("tide-theme");
+      var dark = saved ? saved === "dark"
+        : !!(window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches);
+      if (dark) document.documentElement.setAttribute("data-theme","dark");
+    }catch(e){}
+  })();
+</script>
 </head>
 <body>
 
 <header><div class="wrap nav">
-  <div class="mark">T<span>~</span>IDE · MISSION CONTROL</div>
-  <button id="signout" class="hidden">Sign out</button>
+  <div class="mark"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M2 9c3-4.4 6-4.4 9 0s6 4.4 9 0" fill="none" stroke="var(--mist)" stroke-width="2" stroke-linecap="round" opacity=".55"/><path d="M2 15c3-4.4 6-4.4 9 0s6 4.4 9 0" fill="none" stroke="var(--tide)" stroke-width="2" stroke-linecap="round"/></svg>T<span>~</span>IDE · MISSION CONTROL</div>
+  <div class="navside">
+    <button id="themebtn" type="button" aria-label="Switch between light and dark" onclick="flipTheme()">☾ dark</button>
+    <button id="signout" class="hidden">Sign out</button>
+  </div>
 </div></header>
 
 <main class="wrap">
@@ -176,6 +261,30 @@
     <div class="sectionlabel" id="pickslabel">This week's picks</div>
     <div id="picks"></div>
 
+    <div class="sectionlabel">Scoreboard · we grade our own picks</div>
+    <div id="scorearea"><p style="color:var(--mist);font-size:14.5px">Loading…</p></div>
+
+    <div class="sectionlabel">Marketplace · what's selling right now</div>
+    <div class="pick" id="markethub">
+      <p style="font-size:15px;color:var(--mist)">Live best-seller and trending
+        pages, straight from the sources. We link to the live pages instead of
+        copying them, so nothing here can go stale — what you see is what's
+        selling at the minute you tap.</p>
+      <div class="linkrow" style="margin-top:10px">
+        <a class="linkbtn" target="_blank" rel="noopener" href="https://www.amazon.com/gp/bestsellers">Amazon Best Sellers</a>
+        <a class="linkbtn" target="_blank" rel="noopener" href="https://www.amazon.com/gp/movers-and-shakers">Amazon Movers &amp; Shakers (24h risers)</a>
+        <a class="linkbtn" target="_blank" rel="noopener" href="https://www.tiktok.com/tag/tiktokmademebuyit">#TikTokMadeMeBuyIt</a>
+        <a class="linkbtn" target="_blank" rel="noopener" href="https://www.google.com/search?q=trending+on+ebay">eBay trending (via Google)</a>
+        <a class="linkbtn" target="_blank" rel="noopener" href="https://www.google.com/search?q=etsy+best+sellers">Etsy best sellers (via Google)</a>
+        <a class="linkbtn" target="_blank" rel="noopener" href="https://www.google.com/search?q=walmart+best+sellers">Walmart best sellers (via Google)</a>
+      </div>
+      <p class="note" style="margin-top:10px">Cross-check the picks against these:
+        a pick that's rising in search AND visible on live seller lists is a
+        stronger bet than either signal alone. The "via Google" links search the
+        live web on purpose — those companies move their pages around, and a
+        search can't rot.</p>
+    </div>
+
     <div class="sectionlabel">Your store · money you actually made</div>
     <div id="storearea"><p style="color:var(--mist);font-size:14.5px">Loading…</p></div>
 
@@ -187,6 +296,9 @@
 
     <div class="sectionlabel">Creators · commission beats ad spend</div>
     <div id="crewarea"><p style="color:var(--mist);font-size:14.5px">Loading…</p></div>
+
+    <div class="sectionlabel">Ripple Lab · an experiment, kept honest</div>
+    <div id="ripplearea"><p style="color:var(--mist);font-size:14.5px">Loading…</p></div>
 
     <div class="odds"><b>The honest part, always visible:</b> these are research
       leads, not guarantees. Most product tests fail — that's normal. Test small,
@@ -206,6 +318,21 @@
   const STRIPE_PAYMENT_LINK = "PASTE_YOUR_STRIPE_PAYMENT_LINK_URL";
 
   const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+  // Theme toggle (the pre-paint script in <head> applied the starting theme)
+  window.flipTheme = function(){
+    const root = document.documentElement;
+    const nowDark = root.getAttribute("data-theme") === "dark";
+    if (nowDark) root.removeAttribute("data-theme");
+    else root.setAttribute("data-theme","dark");
+    try{ localStorage.setItem("tide-theme", nowDark ? "light" : "dark"); }catch(e){}
+    themeLabel();
+  };
+  function themeLabel(){
+    const b = document.getElementById("themebtn"); if (!b) return;
+    b.textContent = document.documentElement.getAttribute("data-theme")==="dark" ? "☀ light" : "☾ dark";
+  }
+  themeLabel();
   const $ = (id) => document.getElementById(id);
   const show = (id) => ["view-login","view-locked","view-dash"]
       .forEach(v => $(v).classList.toggle("hidden", v !== id));
@@ -226,16 +353,26 @@
   }
 
   function plainEvidence(ev){
+    // Renders v0.1 evidence exactly as before, and v0.2 evidence with its
+    // freshness tags and the agreement rule — honesty in the same plain words.
     const out = [];
-    if (ev.trend_series) out.push(
+    if (ev.trend_series?.stale) out.push(`Search interest: ${ev.trend_series.stale}`);
+    else if (ev.trend_series) out.push(
       `Search interest: ${ev.trend_series.slope > 0 ? "rising" : "flat/declining"}` +
-      (ev.trend_series.peak_recent ? ", and the peak is recent" : ""));
-    if (ev.reddit) out.push(
+      (ev.trend_series.peak_recent ? ", and the peak is recent" : "") +
+      (ev.trend_series.freshness ? ` — ${ev.trend_series.freshness}` : ""));
+    if (ev.reddit?.stale) out.push(`People talking about it: ${ev.reddit.stale}`);
+    else if (ev.reddit) out.push(
       `People talking about it: ${ev.reddit.mentions_30d} mentions in 30 days` +
-      (ev.reddit.organic_ratio >= 0.8 ? " (looks organic)" : ""));
-    if (typeof ev.meta_ads === "string") out.push("Ad competition: no data yet — score capped to stay honest");
+      (ev.reddit.organic_ratio >= 0.8 ? " (looks organic)" : "") +
+      (ev.reddit.freshness ? ` — ${ev.reddit.freshness}` : ""));
+    if (typeof ev.meta_ads === "string") out.push("Ad competition: " +
+      (ev.meta_ads.includes("discarded") ? ev.meta_ads : "no data yet — score capped to stay honest"));
     else if (ev.meta_ads) out.push(`Ad competition: ${ev.meta_ads.active_ads} active ads found`);
     if (ev.logistics) out.push(`Shipping reality: ${ev.logistics}`);
+    if (typeof ev.sources_fresh === "number")
+      out.push(`Fresh sources agreeing: ${ev.sources_fresh} of ${ev.sources_reporting ?? "?"} reporting`);
+    if (ev.agreement_rule) out.push(`Agreement rule: ${ev.agreement_rule}`);
     out.push(`Sources reporting: ${ev.sources_reporting ?? "n/a"} · model v${ev.model_version ?? "?"}`);
     return out.join("\n");
   }
@@ -248,6 +385,335 @@
 
   const fmt = new Intl.NumberFormat("en-US",{style:"currency",currency:"USD"});
   const esc = (s) => String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+
+  // ── v1.5: view-the-item links ─────────────────────────────────────────────
+  // One-tap OUTBOUND links only — we never scrape or auto-run anything.
+  // These are other companies' URLs and they can rot. If one dies, THIS is the
+  // only place to fix it. (Formats verified July 2026: Google now uses udm=2
+  // for images and udm=28 for shopping; the old tbm= values are retired.)
+  const VIEW_LINKS = [
+    ["See photos",     (q)=>`https://www.google.com/search?udm=2&q=${q}`],
+    ["Price check",    (q)=>`https://www.google.com/search?udm=28&q=${q}`],
+    ["Amazon",         (q)=>`https://www.amazon.com/s?k=${q}`],
+    ["Trend, 90 days", (q)=>`https://trends.google.com/trends/explore?date=today%203-m&q=${q}`],
+    ["TikTok",         (q)=>`https://www.tiktok.com/search?q=${q}`],
+  ];
+  const viewLinks = (name) => {
+    const q = encodeURIComponent(name || "").replace(/'/g, "%27");
+    return `<div class="linkrow">${VIEW_LINKS.map(([label, url]) =>
+      `<a class="linkbtn" target="_blank" rel="noopener" href="${url(q)}">${label}</a>`
+    ).join("")}</div>`;
+  };
+
+  // ── v1.5: Scoreboard — one-tap Hit/Miss on matured picks ─────────────────
+  // The 14-day lock is enforced twice: here (so the buttons don't even show)
+  // and inside the database function score_pick (so it can't be bypassed) —
+  // same philosophy as the Operations caps: rules live in the executor.
+  const MATURE_DAYS = 14, DAY_MS = 86400000;
+  const readyDate = (publishedAt) =>
+    new Date(new Date(publishedAt).getTime() + MATURE_DAYS * DAY_MS);
+  const isMature = (publishedAt) => Date.now() >= readyDate(publishedAt).getTime();
+  const dateWords = (d) => d.toLocaleDateString("en-US",{month:"long",day:"numeric"});
+  const title = (p) => esc((p.products?.name || "product").replace(/\b\w/g, c=>c.toUpperCase()));
+
+  async function loadScoreboard(){
+    const { data: rows, error } = await sb.from("picks")
+      .select("id, week, published_at, outcome, outcome_at, products(name)")
+      .order("published_at",{ascending:false}).limit(80);
+    if (error){ $("scorearea").innerHTML =
+      `<div class="empty">Couldn't load the scoreboard. Refresh in a minute.</div>`; return; }
+    const picks = rows || [];
+    if (!picks.length){ $("scorearea").innerHTML =
+      `<div class="empty">Once a pick is two weeks old it lines up here to be
+       judged — hit or miss, in one tap.</div>`; return; }
+
+    const unscored = picks.filter(p=>!p.outcome);
+    const ready    = unscored.filter(p=>isMature(p.published_at));
+    const waiting  = unscored.filter(p=>!isMature(p.published_at));
+    const scored   = picks.filter(p=>p.outcome);
+    const hits     = scored.filter(p=>p.outcome==="hit").length;
+    const canScore = !!window._isFounder;
+
+    $("scorearea").innerHTML = `
+      <div class="pick">
+        <p style="font-size:15px;color:var(--mist)">Every pick comes back here two
+          weeks after it publishes, to be judged in one tap: did it keep rising, or
+          did it fade? The tally goes on the public landing page — hits and misses
+          both. That's the whole point.</p>
+        <div class="statusline" style="margin-top:10px">${scored.length} scored so far
+          (${hits} hit · ${scored.length-hits} miss)${scored.length<10
+            ? " · the public hit rate appears at 10 scored picks" : ""}</div>
+
+        ${ready.length && canScore ? `<div class="sectionlabel" style="margin:18px 0 4px">Ready to judge</div>` : ""}
+        ${canScore ? ready.map(p=>`
+          <div style="border-top:1px dashed var(--line);padding:14px 0" id="sp-${p.id}">
+            <div class="pickrow">
+              <span class="pickname" style="font-size:17px" id="spname-${p.id}">${title(p)}</span>
+              <span class="badge watch">WEEK ${esc(p.week)}</span>
+            </div>
+            <div class="lockline" style="margin-top:4px">published ${dateWords(new Date(p.published_at))}
+              — open the links, check if interest kept rising, then call it:</div>
+            ${viewLinks(p.products?.name)}
+            <div class="scorebtns">
+              <button class="btn" style="width:auto;padding:11px 18px"
+                onclick="scorePick(${p.id},'hit',this)">Hit — it kept rising</button>
+              <button class="btn secondary" style="width:auto;padding:11px 18px"
+                onclick="scorePick(${p.id},'miss',this)">Miss — it faded</button>
+              <span class="msg" id="spmsg-${p.id}" style="margin:0"></span>
+            </div>
+          </div>`).join("") : ""}
+        ${ready.length && !canScore ? ready.map(p=>`
+          <div class="prodrow"><span class="dot pending"></span>
+            <span class="t">${title(p)} · week ${esc(p.week)}</span>
+            <span class="m">being scored — result appears here</span></div>`).join("") : ""}
+
+        ${waiting.length ? `<div class="sectionlabel" style="margin:18px 0 4px">Too young to judge — locked on purpose</div>` : ""}
+        ${waiting.map(p=>`
+          <div class="prodrow"><span class="dot pending"></span>
+            <span class="t">${title(p)} · week ${esc(p.week)}</span>
+            <span class="m">ready to score on ${dateWords(readyDate(p.published_at))}</span></div>`).join("")}
+
+        ${scored.length ? `<div class="sectionlabel" style="margin:18px 0 4px">Already judged</div>` : ""}
+        ${scored.slice(0,15).map(p=>`
+          <div class="prodrow" id="sp-${p.id}"><span class="dot ${p.outcome==="hit"?"test":(p.outcome==="miss"?"stop":"pending")}"></span>
+            <span class="t" id="spname-${p.id}">${title(p)} · week ${esc(p.week)}</span>
+            <span class="m"><span class="outcome ${esc(p.outcome)}">${esc(p.outcome).toUpperCase()}</span>${canScore ? `
+              <button class="btn secondary" style="width:auto;padding:6px 12px;font-size:12.5px;margin-left:8px"
+                onclick="scorePick(${p.id},'${p.outcome==="hit"?"miss":"hit"}',this)">change</button>` : ""}</span></div>`).join("")}
+
+        <p class="note" style="margin-top:12px">A pick is judged 2–4 weeks after
+          publishing: did search interest keep rising, and did it surface on TikTok
+          or in ads after we flagged it? When in doubt, call it a miss — the number
+          is only worth something if it's strict.</p>
+      </div>`;
+  }
+
+  // ── v2: supplier finder (dropshipping / wholesale) + honest profit check ──
+  // Outbound links only — we never scrape or auto-run anything. These are
+  // other companies' URLs and can change; if one dies, THIS array is the only
+  // place to fix it (mirrored in the agents' link health-check).
+  const slugify = (name) => String(name||"").toLowerCase()
+      .replace(/[^a-z0-9]+/g,"-").replace(/^-+|-+$/g,"");
+  const SUPPLIER_LINKS = {
+    drop: [
+      ["AliExpress",      (n)=>`https://www.aliexpress.com/w/wholesale-${slugify(n)}.html`],
+      ["CJdropshipping",  ( )=>`https://www.cjdropshipping.com`],
+      ["Zendrop",         ( )=>`https://www.zendrop.com`],
+      ["Spocket",         ( )=>`https://www.spocket.co`],
+      ["DSers",           ( )=>`https://www.dsers.com`],
+    ],
+    whole: [
+      ["Alibaba",         (n)=>`https://www.alibaba.com/trade/search?SearchText=${encodeURIComponent(n||"").replace(/'/g,"%27")}`],
+      ["Faire",           (n)=>`https://www.faire.com/search?q=${encodeURIComponent(n||"").replace(/'/g,"%27")}`],
+      ["More wholesalers (via Google)", (n)=>`https://www.google.com/search?q=${encodeURIComponent((n||"")+" wholesale supplier").replace(/'/g,"%27")}`],
+    ],
+  };
+  const supLinks = (kind, n) => SUPPLIER_LINKS[kind].map(([label, url]) =>
+    `<a class="linkbtn" target="_blank" rel="noopener" href="${url(n)}">${label}</a>`).join("");
+
+  let estMapGlobal = {};
+  function supplierBlock(pid, name){
+    const e = estMapGlobal[pid];
+    return `<details><summary>Find suppliers + profit check</summary>
+      <div class="tabrow">
+        <button type="button" class="tab active" onclick="supTab(${pid},'drop',this)">Dropshipping</button>
+        <button type="button" class="tab" onclick="supTab(${pid},'whole',this)">Wholesale / bulk</button>
+      </div>
+      <div class="linkrow" id="sup-drop-${pid}">${supLinks("drop", name)}</div>
+      <div class="linkrow hidden" id="sup-whole-${pid}">${supLinks("whole", name)}</div>
+      <p class="note" style="margin-top:8px">These open other companies' sites — a few
+        are app platforms you search inside. To search by photo, save a picture from
+        "See photos" first, then use <a target="_blank" rel="noopener"
+        href="https://lens.google.com">Google Lens</a>. Links can move on their end.</p>
+      <div class="inline" style="margin-top:12px">
+        you'd sell at $ <input type="number" min="0" step="0.01" id="est-sell-${pid}" style="width:90px" oninput="estCalc(${pid})" value="${e?esc(e.sell_price):""}">
+        supplier charges $ <input type="number" min="0" step="0.01" id="est-cost-${pid}" style="width:90px" oninput="estCalc(${pid})" value="${e?esc(e.supplier_cost):""}">
+        shipping $ <input type="number" min="0" step="0.01" id="est-ship-${pid}" style="width:90px" oninput="estCalc(${pid})" value="${e?esc(e.est_shipping):""}">
+      </div>
+      <div class="estline" id="est-out-${pid}">Enter the three numbers — the supplier links above have the real costs.</div>
+      ${window._isFounder ? `<div class="inline" style="margin-top:8px">
+        <button class="btn" type="button" style="width:auto;padding:8px 14px;font-size:14px"
+          onclick="saveEstimate(${pid},this)">Save this estimate</button>
+        <span class="msg" id="estmsg-${pid}" style="margin:0"></span></div>` : ""}
+      ${e ? `<div class="statusline" style="margin-top:8px">saved ${new Date(e.updated_at).toLocaleDateString()} —
+        every number here is an estimate, shown with its assumptions</div>` : ""}
+    </details>`;
+  }
+  window.supTab = (pid, kind, btn) => {
+    document.getElementById("sup-drop-"+pid).classList.toggle("hidden", kind!=="drop");
+    document.getElementById("sup-whole-"+pid).classList.toggle("hidden", kind!=="whole");
+    [...btn.parentElement.querySelectorAll(".tab")].forEach(b=>b.classList.toggle("active", b===btn));
+  };
+  window.estCalc = (pid) => {
+    const g = (k)=>parseFloat(document.getElementById(`est-${k}-${pid}`)?.value);
+    const sell=g("sell"), cost=g("cost"), ship=g("ship");
+    const out = document.getElementById("est-out-"+pid); if (!out) return null;
+    if (!(sell>0) || !(cost>=0) || !(ship>=0)){
+      out.textContent = "Enter the three numbers — the supplier links above have the real costs.";
+      return null;
+    }
+    const fees = sell*0.029 + 0.30;                 // card fees, an ESTIMATE
+    const profit = sell - cost - ship - fees;
+    out.textContent = profit >= 0
+      ? `≈ ${fmt.format(profit)} per sale BEFORE ads — assumes ${fmt.format(fees)} card fees (2.9% + $0.30, estimated). Ads usually eat most of this. An estimate, not a promise.`
+      : `Loses ${fmt.format(Math.abs(profit))} per sale at these numbers — find a cheaper supplier, raise the price, or skip it. Better to learn that here than after ordering.`;
+    return { sell, cost, ship, fees: Math.round(fees*100)/100, profit: Math.round(profit*100)/100 };
+  };
+  window.saveEstimate = async (pid, btn) => {
+    const est = window.estCalc(pid);
+    const m = document.getElementById("estmsg-"+pid); if (m) m.className = "msg";
+    if (!est){ if (m){ m.textContent = "Enter the three numbers first."; m.classList.add("err"); } return; }
+    btn.disabled = true;
+    const { error } = await sb.from("profit_estimates").upsert({
+      product_id: pid, sell_price: est.sell, supplier_cost: est.cost,
+      est_shipping: est.ship, est_fees: est.fees, est_profit: est.profit,
+      assumptions: "card fees 2.9% + $0.30 estimated; ads, returns and taxes not included",
+      sources: "founder-checked supplier links",
+      updated_at: new Date().toISOString(),
+    }, { onConflict: "product_id" });
+    btn.disabled = false;
+    if (m){
+      m.textContent = error
+        ? "Couldn't save — try again. (If this keeps happening, the v2 database step may not have run yet.)"
+        : "Saved.";
+      m.classList.add(error ? "err" : "ok");
+    }
+    if (!error) estMapGlobal[pid] = { ...est, sell_price: est.sell, supplier_cost: est.cost,
+      est_shipping: est.ship, updated_at: new Date().toISOString() };
+  };
+
+  // ── v2: Ripple Lab (EXPERIMENT) — predictions from seasons & culture. ─────
+  // Quarantined on purpose: separate table, separate accuracy number, its own
+  // warning. If its record is poor after 4-8 weeks, the right move is removal.
+  async function loadRipple(){
+    const area = $("ripplearea");
+    const [{ data: rr, error }, hrRes] = await Promise.all([
+      sb.from("ripples")
+        .select("id, event_name, event_date, stock_by, confidence, categories, watch_terms, reasoning, outcome, outcome_at")
+        .order("event_date",{ascending:true}).limit(40),
+      sb.from("hitrate_public").select("picks_scored, hits, rate").eq("period","ripple_all").maybeSingle(),
+    ]);
+    if (error){ area.innerHTML = `<div class="empty">The lab wakes up after the
+      v2 database step runs. Nothing is broken — it just isn't installed yet.</div>`; return; }
+
+    const rows = rr || [];
+    const hr = hrRes?.data;
+    const now = Date.now();
+    const passed = (r) => Date.parse(r.event_date) < now - 86400000;
+    const open      = rows.filter(r => !r.outcome && !passed(r));
+    const judgeable = rows.filter(r => !r.outcome &&  passed(r));
+    const judged    = rows.filter(r =>  r.outcome);
+    const canScore  = !!window._isFounder;
+    const dateW = (s) => new Date(s + "T12:00:00").toLocaleDateString("en-US",{month:"long",day:"numeric"});
+    const record = hr && hr.picks_scored > 0
+      ? `The lab's own record so far: ${hr.hits} of ${hr.picks_scored} calls right (${Math.round((hr.rate||0)*100)}%). Judged separately from the real picks, always.`
+      : `No lab calls judged yet — its record starts at zero, in public, separate from the real picks.`;
+
+    area.innerHTML = `
+      <div class="pick experiment">
+        <div class="pickrow">
+          <span class="expbadge">EXPERIMENT</span>
+          <span style="font-size:14.5px;color:var(--mist)">${esc(record)}</span>
+        </div>
+        <p style="font-size:14.5px;color:var(--mist);margin-top:10px"><strong style="color:var(--ink);font-weight:500">Read
+          this first:</strong> most cultural moments lift nothing measurable for a small
+          seller. Everything below is a <em>possible</em> lift for a product category —
+          never a promise, never a pick. If this lab's record stays poor, the honest
+          move is to remove it, and that recommendation will be made to your face.</p>
+
+        ${judgeable.length && canScore ? `<div class="sectionlabel" style="margin:16px 0 4px">The event happened — judge the call</div>` : ""}
+        ${canScore ? judgeable.map(r=>`
+          <div class="ripline" id="rp-${r.id}">
+            <div class="pickrow">
+              <span class="pickname" style="font-size:16.5px" id="rpname-${r.id}">${esc(r.event_name)}</span>
+              <span class="conf ${esc(r.confidence)}">${esc(r.confidence).toUpperCase()}</span>
+            </div>
+            <div class="lockline" style="margin-top:4px">was ${dateW(r.event_date)} — did these categories actually lift for you or in Trends?</div>
+            <div class="lockline">${(r.categories||[]).map(esc).join(" · ")}</div>
+            <div class="scorebtns">
+              <button class="btn" style="width:auto;padding:11px 18px" onclick="scoreRipple(${r.id},'hit',this)">Hit — it lifted</button>
+              <button class="btn secondary" style="width:auto;padding:11px 18px" onclick="scoreRipple(${r.id},'miss',this)">Miss — nothing measurable</button>
+              <span class="msg" id="rpmsg-${r.id}" style="margin:0"></span>
+            </div>
+          </div>`).join("") : ""}
+        ${judgeable.length && !canScore ? `<div class="lockline" style="margin-top:12px">${judgeable.length} past call(s) awaiting the founder's judgment.</div>` : ""}
+
+        ${open.length ? `<div class="sectionlabel" style="margin:16px 0 4px">In the window now</div>` : ""}
+        ${open.map(r=>`
+          <div class="ripline">
+            <div class="pickrow">
+              <span class="pickname" style="font-size:16.5px">${esc(r.event_name)}</span>
+              <span class="conf ${esc(r.confidence)}">${esc(r.confidence).toUpperCase()} CONFIDENCE</span>
+            </div>
+            <div class="pickmeta">event ${dateW(r.event_date)} · <b>stock by ${dateW(r.stock_by)}</b></div>
+            <div class="lockline" style="margin-top:6px">Possible lift, not a promise: ${(r.categories||[]).map(esc).join(" · ")}</div>
+            <div class="pickmeta" style="margin-top:6px">worth watching: ${(r.watch_terms||[]).map(esc).join(" · ")}
+              <span style="color:var(--mist)"> — add any of these to the Scout seeds file by hand if you want the real engine watching them</span></div>
+            <p class="note" style="margin-top:6px">${esc(r.reasoning||"")}</p>
+          </div>`).join("")}
+
+        ${judged.length ? `<div class="sectionlabel" style="margin:16px 0 4px">Judged calls</div>` : ""}
+        ${judged.slice(0,10).map(r=>`
+          <div class="prodrow"><span class="dot ${r.outcome==="hit"?"test":(r.outcome==="miss"?"stop":"pending")}"></span>
+            <span class="t">${esc(r.event_name)} · ${dateW(r.event_date)}</span>
+            <span class="m"><span class="outcome ${esc(r.outcome)}">${esc(r.outcome).toUpperCase()}</span></span></div>`).join("")}
+
+        ${!rows.length ? `<p style="color:var(--mist);font-size:14.5px;margin-top:12px">Empty for now —
+          the lab fills in after the next weekly run (or run the "weekly digest" workflow
+          by hand once). You can add your own culture events — movies, games, sports —
+          by editing <span style="font-family:var(--mono)">agents/tide/ripple/events.yaml</span>
+          on GitHub; instructions are inside the file.</p>` : ""}
+
+        <p class="note" style="margin-top:12px">Guardrail, permanent: categories here are
+          generic on purpose. "Inspired-by" is the line — never counterfeit, never
+          fake-licensed. Selling branded merchandise without a license gets stores
+          banned and sellers sued.</p>
+      </div>`;
+  }
+
+  window.scoreRipple = async (id, verdict, btn) => {
+    const nameEl = document.getElementById("rpname-"+id);
+    const nm = nameEl ? nameEl.textContent.trim() : "this call";
+    const line = verdict === "hit"
+      ? `Judge "${nm}" a HIT — its categories really lifted? This goes into the lab's public record.`
+      : `Judge "${nm}" a MISS? Good — honest misses are what make the record worth anything.`;
+    if (!confirm(line)) return;
+    const original = btn ? btn.textContent : "";
+    if (btn){ btn.disabled = true; btn.textContent = "Saving…"; }
+    const { data, error } = await sb.rpc("score_ripple", { p_ripple_id: id, p_verdict: verdict });
+    const code = error ? "error" : data;
+    if (code === "ok"){ loadRipple(); return; }
+    if (btn){ btn.disabled = false; btn.textContent = original; }
+    const text =
+      code === "too_early"   ? "The event hasn't happened yet — the lab is judged after, on purpose." :
+      code === "not_allowed" ? "Only the founder account can judge lab calls." :
+      code === "not_found"   ? "Couldn't find that call — refresh the page." :
+      "Couldn't save — check your connection and try again.";
+    const m = document.getElementById("rpmsg-"+id);
+    if (m){ m.className = "msg err"; m.textContent = text; } else { alert(text); }
+  };
+
+  window.scorePick = async (id, verdict, btn) => {
+    const nameEl = document.getElementById("spname-"+id);
+    const nm = nameEl ? nameEl.textContent.split("·")[0].trim() : "this pick";
+    const line = verdict === "hit"
+      ? `Mark “${nm}” as a HIT? This feeds the public hit rate.`
+      : `Mark “${nm}” as a MISS? Misses count too — on purpose.`;
+    if (!confirm(line)) return;
+    const original = btn ? btn.textContent : "";
+    if (btn){ btn.disabled = true; btn.textContent = "Saving…"; }
+    const { data, error } = await sb.rpc("score_pick", { p_pick_id: id, p_verdict: verdict });
+    const code = error ? "error" : data;
+    if (code === "ok"){ loadScoreboard(); return; }
+    if (btn){ btn.disabled = false; btn.textContent = original; }
+    const text =
+      code === "too_early"   ? "Locked: this pick isn't two weeks old yet." :
+      code === "not_allowed" ? "Only the founder account can score picks." :
+      code === "not_found"   ? "Couldn't find that pick — refresh the page." :
+      "Couldn't save — check your connection and try again. If this keeps happening, the v1.5 database step may not have run yet.";
+    const m = document.getElementById("spmsg-"+id);
+    if (m){ m.className = "msg err"; m.textContent = text; } else { alert(text); }
+  };
 
   function renderConnect(msg=""){
     $("storearea").innerHTML = `
@@ -812,6 +1278,16 @@ ${esc(b.disclosure_note)}</div>
     for (const c of (cr||[])) (angleMap[c.product_id] ??= []).push(c);
     angleMapGlobal = angleMap;
 
+    // v2: saved profit estimates (missing table before the DB step -> just empty)
+    let pe = null;
+    if (ids.length){
+      ({ data: pe } = await sb.from("profit_estimates")
+        .select("product_id, sell_price, supplier_cost, est_shipping, est_fees, est_profit, updated_at")
+        .in("product_id", ids));
+    }
+    estMapGlobal = {};
+    for (const e of (pe||[])) estMapGlobal[e.product_id] = e;
+
     $("picks").innerHTML = rows.map(r => {
       const p = r.products, s = r.scores;
       const ev = typeof s.evidence === "string" ? JSON.parse(s.evidence) : s.evidence;
@@ -838,25 +1314,35 @@ PAGE COPY: ${esc(a.page_copy)}</div>`).join("")}
           <span class="badge ${s.verdict}">${s.verdict.toUpperCase()}</span>
         </div>
         <div class="pickmeta"><b>${Math.round(s.total)}</b> / 100 · confidence: ${s.confidence}</div>
+        ${viewLinks(p.name)}
         ${warns.map(w=>`<div class="warn">${w}</div>`).join("")}
         <details><summary>Why this score</summary>
           <div class="evidence">${plainEvidence(ev)}</div></details>
         ${anglesBlock}
+        ${supplierBlock(r.product_id, p.name)}
         ${s.verdict === "test" ? `<div style="margin-top:12px"><button class="btn secondary"
           style="width:auto;padding:8px 14px;font-size:14px"
           onclick="queueImport(${r.product_id}, '${esc(p.name).replace(/'/g,"\\'")}', this)">
           Send to my store as a draft</button></div>` : ""}
       </div>`;
     }).join("");
+    rows.forEach(r => { if (estMapGlobal[r.product_id]) estCalc(r.product_id); });
   }
 
   async function route(){
     const { data: { session } } = await sb.auth.getSession();
     $("signout").classList.toggle("hidden", !session);
     if (!session){ show("view-login"); return; }
-    const { data: me } = await sb.from("members")
-      .select("active").eq("user_id", session.user.id).maybeSingle();
-    if (me?.active){ show("view-dash"); loadDashboard(); loadStore(); loadProtection(); loadOps(); loadCrew(); }
+    // v1.5: also read is_founder; if the database step hasn't run yet, fall
+    // back gracefully so the dashboard still works either way.
+    let { data: me, error: meErr } = await sb.from("members")
+      .select("active,is_founder").eq("user_id", session.user.id).maybeSingle();
+    if (meErr){
+      ({ data: me } = await sb.from("members")
+        .select("active").eq("user_id", session.user.id).maybeSingle());
+    }
+    window._isFounder = !!me?.is_founder;
+    if (me?.active){ show("view-dash"); loadDashboard(); loadScoreboard(); loadRipple(); loadStore(); loadProtection(); loadOps(); loadCrew(); }
     else {
       $("lockedemail").textContent = session.user.email;
       const link = STRIPE_PAYMENT_LINK.startsWith("PASTE") ? "#" :
