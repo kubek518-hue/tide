@@ -20,3 +20,7 @@ jobs:
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
         run: python -m tide.selftest
+      - name: Check the outbound links (they rot — this tells you which)
+        if: always()
+        working-directory: agents
+        run: python -m tide.linkcheck
