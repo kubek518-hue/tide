@@ -11,9 +11,9 @@ def main() -> int:
     # 1. Environment
     import os
     if os.environ.get("DATABASE_URL"):
-        print("[1/4] Database key ......... found")
+        print("[1/6] Database key ......... found")
     else:
-        print("[1/4] Database key ......... MISSING — set the DATABASE_URL "
+        print("[1/6] Database key ......... MISSING — set the DATABASE_URL "
               "secret (guide Part 3)")
         return 1
 
@@ -23,9 +23,9 @@ def main() -> int:
         with db.cursor() as cur:
             cur.execute("select 1 as one")
             assert cur.fetchone()["one"] == 1
-        print("[2/4] Database connection .. works")
+        print("[2/6] Database connection .. works")
     except Exception as e:  # noqa: BLE001
-        print(f"[2/4] Database connection .. FAILED — {str(e)[:160]}")
+        print(f"[2/6] Database connection .. FAILED — {str(e)[:160]}")
         print("      Usual cause: the password inside DATABASE_URL (no [ ] "
               "brackets allowed), or a paused Supabase project (open the "
               "dashboard and click Restore).")
@@ -45,14 +45,14 @@ def main() -> int:
         missing = [t for t in expected if t not in have]
         if missing:
             ok = False
-            print(f"[3/4] Tables ............... MISSING: {', '.join(missing)}")
+            print(f"[3/6] Tables ............... MISSING: {', '.join(missing)}")
             print("      Fix: run db/setup-all.sql once in the Supabase SQL "
                   "Editor (guide Part 1).")
         else:
-            print(f"[3/4] Tables ............... all {len(expected)} present")
+            print(f"[3/6] Tables ............... all {len(expected)} present")
     except Exception as e:  # noqa: BLE001
         ok = False
-        print(f"[3/4] Tables ............... check failed — {str(e)[:120]}")
+        print(f"[3/6] Tables ............... check failed — {str(e)[:120]}")
 
     # 4. Signs of life
     try:
@@ -69,10 +69,51 @@ def main() -> int:
                      f"{last['started_at']:%Y-%m-%d %H:%M} UTC")
         else:
             life += "; no agent runs yet — run the 'scan' workflow once"
-        print(f"[4/4] Signs of life ........ {life}")
+        print(f"[4/6] Signs of life ........ {life}")
     except Exception as e:  # noqa: BLE001
         ok = False
-        print(f"[4/4] Signs of life ........ check failed — {str(e)[:120]}")
+        print(f"[4/6] Signs of life ........ check failed — {str(e)[:120]}")
+
+    # 5. Source freshness — the self-monitoring the freshness law requires.
+    #    A quiet source is a WARNING, not a failure: scoring already discounts
+    #    stale data on its own; this line just tells you why numbers moved.
+    try:
+        import datetime as dt
+        with db.cursor() as cur:
+            cur.execute("select source, max(captured_at) as last from signals group by source")
+            latest = {r["source"]: r["last"] for r in cur.fetchall()}
+        now = dt.datetime.now(dt.timezone.utc)
+        parts = []
+        for src, label in (("google_trends", "Google Trends"), ("reddit", "Reddit"),
+                           ("meta_ads", "Meta Ad Library")):
+            last = latest.get(src)
+            if last is None:
+                parts.append(label + (": never reported (fine — needs a token you haven't added)"
+                                      if src == "meta_ads" else
+                                      ": never reported — run the scan workflow once"))
+                continue
+            if last.tzinfo is None:
+                last = last.replace(tzinfo=dt.timezone.utc)
+            days = (now - last).days
+            parts.append(f"{label}: {days}d ago" + ("" if days <= 7 else
+                         " — GONE QUIET; scoring is already discounting it (freshness law); check the scan workflow"))
+        print("[5/6] Source freshness ..... " + " | ".join(parts))
+    except Exception as e:  # noqa: BLE001
+        print(f"[5/6] Source freshness ..... check failed — {str(e)[:120]}")
+
+    # 6. v2 pieces present? (warning with the exact fix, never a hard failure)
+    try:
+        with db.cursor() as cur:
+            cur.execute("select table_name from information_schema.tables where table_schema='public'")
+            have2 = {r["table_name"] for r in cur.fetchall()}
+        v2_missing = [t for t in ("profit_estimates", "ripples") if t not in have2]
+        if v2_missing:
+            print(f"[6/6] v2 database step ..... NOT RUN YET — missing {', '.join(v2_missing)}. "
+                  "Fix: paste v2-migration.sql once in the Supabase SQL Editor (v2 guide Part 2).")
+        else:
+            print("[6/6] v2 database step ..... installed (profit estimates + Ripple Lab)")
+    except Exception as e:  # noqa: BLE001
+        print(f"[6/6] v2 database step ..... check failed — {str(e)[:120]}")
 
     print("\nRESULT:", "ALL GOOD — the pipeline is healthy." if ok
           else "Something needs attention — see the lines above.")
