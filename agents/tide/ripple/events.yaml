@@ -1,0 +1,27 @@
+# ═══════════════════════════════════════════════════════════════════════════
+# RIPPLE LAB — your culture events (movies, games, sports, anything upcoming)
+# ═══════════════════════════════════════════════════════════════════════════
+# The seasonal calendar (Christmas, Halloween, Black Friday...) is built in.
+# THIS file is where YOU add culture events by hand. Edit it on GitHub with
+# the pencil, keep the exact spacing, and the next weekly run picks it up.
+#
+# THE RULES (they protect you):
+#   - categories must be GENERIC ("space-themed room decor"), never branded
+#     merchandise. "Inspired-by" is the line; fake-licensed products get
+#     stores banned and sellers sued.
+#   - every founder event is LOW confidence, always. A hunch is a hunch.
+#
+# Copy the example below (remove the leading # signs), then edit the values:
+#
+# events:
+#   - name: "Big space movie sequel"
+#     date: 2026-11-20
+#     lead_weeks: 6
+#     categories:
+#       - "space-themed room decor"
+#       - "galaxy night lights"
+#     watch_terms:
+#       - "galaxy projector"
+#     note: "Sequel to a huge original; space decor lifted last time."
+
+events: []
