@@ -22,7 +22,7 @@ jobs:
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
-        run: python -m tide.orchestrator publisher coach creative audit recruiter
+        run: python -m tide.orchestrator publisher coach creative ripple audit recruiter
       - name: Upload digest artifact
         uses: actions/upload-artifact@v4
         with:
