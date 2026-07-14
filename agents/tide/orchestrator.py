@@ -19,6 +19,7 @@ from .creative import creative
 from . import auditor
 from .operations import operations
 from .recruiter import recruiter
+from .ripple import ripple
 
 # All nine agents are active. Built as one piece; switched on one by one.
 # Each has a package folder with a scaffold explaining its contract.
@@ -34,6 +35,7 @@ AGENTS = {
     "audit": lambda run_id: auditor.run(run_id),
     "operations": lambda run_id: operations.run(run_id),
     "recruiter": lambda run_id: recruiter.run(run_id),
+    "ripple": lambda run_id: ripple.run(run_id),   # EXPERIMENT — grades itself
 }
 
 
